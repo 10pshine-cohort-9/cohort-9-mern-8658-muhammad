@@ -6,7 +6,7 @@ import { Button } from './ui/button'
 function Notes() {
   return (
     <div>
-        <Card className={"font-sans dark:border-b-gray-800 border-b-gray-100  dark:bg-[#101321] h-65  shadow-xs group hover:shadow-[0_10px_35px_rgba(139,92,246,0.4)]   m-2   transition-all duration-300 hover:ring-violet-300" }>
+        <Card className={"font-sans dark:border-b-gray-800 border-b-gray-100  dark:bg-[#101321] h-64  shadow-xs group hover:shadow-[0_10px_35px_rgba(139,92,246,0.4)]   m-2   transition-all duration-300 hover:ring-violet-300" }>
             <CardHeader>
                 <CardTitle >
                 <div className={"flex items-center gap-4"}>
@@ -15,7 +15,7 @@ function Notes() {
                 </div>
                 <h2 className='mt-3 '>Welcome to NoteSphere ✨</h2>
                 </CardTitle >
-                <CardAction> <button><Star className='size-4'></Star></button></CardAction>
+                <CardAction> <button type="button" aria-label="Toggle favorite"><Star className='size-4'></Star></button></CardAction>
                 <CardDescription ></CardDescription>
                  </CardHeader>
                 <CardContent className={""} > 

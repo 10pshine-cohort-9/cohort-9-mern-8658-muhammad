@@ -1,3 +1,4 @@
+"use client"
 import { Menu, Moon, Sun, User2 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import React, { useEffect, useState } from 'react'
@@ -22,6 +23,8 @@ useEffect(() => {
          </button>
         <div className='flex items-center justify-center gap-3'>
                     <button 
+                    type="button"
+             aria-label="Toggle theme"
             onClick={() =>
               setTheme(theme === "dark" ? "light" : "dark")
             }

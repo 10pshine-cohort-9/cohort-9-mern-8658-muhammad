@@ -6,14 +6,11 @@ import {
   Star,
   Archive,
   Activity,
-  Search,
   User,
   Settings,
   HelpCircle,
   Info,
-  Bell,
   Plus,
-  LogOut,
   FileText,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -22,7 +19,7 @@ import Link from "next/link";
 function Sidenavbar({ sideOpen }) {
   const path = usePathname();
 
-  let idebarItems = [
+  let sidebarItems = [
     {
       title: "Dashboard",
       icon: LayoutDashboard,
@@ -85,7 +82,7 @@ function Sidenavbar({ sideOpen }) {
     } else {
       setShowText(false);
     }
-  });
+  },[sideOpen]);
 
   return (
     <div
@@ -119,7 +116,7 @@ function Sidenavbar({ sideOpen }) {
       </div>
 
       <div className="mx-4 mt-3">
-        {idebarItems.map((item, idx) => (
+        {sidebarItems.map((item, idx) => (
           <Link
             href={item.path}
             key={idx}
