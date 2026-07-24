@@ -1,7 +1,6 @@
 import React from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { MoreVertical, Pin, Star } from 'lucide-react'
-import { Button } from './ui/button'
 
 function Notes() {
   return (

@@ -119,7 +119,7 @@ function Sidenavbar({ sideOpen }) {
         {sidebarItems.map((item, idx) => (
           <Link
             href={item.path}
-            key={idx}
+            key={item.path}
             className={`mt-0.5 text-sm cursor-pointer rounded-3xl px-4 py-2 duration-200 flex items-center gap-1.5 transition-colors hover:bg-indigo-50 hover:dark:bg-indigo-950/60 hover:text-gray-900 hover:dark:text-gray-200 ${path === item.path ? "bg-indigo-50 dark:bg-indigo-950/60 text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}
           >
             <item.icon className="size-4" />
@@ -133,7 +133,7 @@ function Sidenavbar({ sideOpen }) {
         {sidebarBottomItems.map((item, idx) => (
           <Link
             href={item.path}
-            key={idx}
+                       key={item.path}
             className={`mt-0.5 text-sm cursor-pointer rounded-3xl px-4 py-2 duration-200 flex items-center gap-1.5 transition-colors hover:bg-indigo-50 hover:dark:bg-indigo-950/60 hover:text-gray-900 hover:dark:text-gray-200 ${path === item.path ? "bg-indigo-50 dark:bg-indigo-950/60 text-gray-800 dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}
           >
             <item.icon className="size-4" />
