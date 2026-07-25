@@ -16,7 +16,7 @@ function page() {
       <CardContent className={"flex justify-center items-center flex-col "}>
         <div className="rounded-full h-20 w-20 bg-gradient-to-r from-violet-500 to-sky-500 flex items-center justify-center  text-2xl font-bold"> G </div>
         
-  <h1 className="text-xl mt-2 font-semibold tracking-tight text-white">Guest</h1>
+  <h1 className="text-xl mt-2 font-semibold tracking-tight ">Guest</h1>
     <p className="mt-2 text-muted-foreground">guest@notesphere.app</p>
 
     <div className="mt-4 grid grid-cols-3 gap-3 ">

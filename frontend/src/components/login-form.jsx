@@ -21,6 +21,11 @@ export function LoginForm({
   className,
   ...props
 }) {
+
+
+  let handleSubmit=()=>{
+//later we sent the data to backend
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className={'dark:bg-[#101321]'}>
@@ -31,7 +36,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
                 <Button variant="outline" type="button">
