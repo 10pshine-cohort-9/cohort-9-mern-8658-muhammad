@@ -17,7 +17,7 @@ function EmptyNoteAction() {
             Create your first note and it will appear right here.
           </p>
 
-          <Button className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500">
+          <Button onClick={()=>{}} className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500">
             <Plus className="mr-2 h-4 w-4" />
             Create note
           </Button>

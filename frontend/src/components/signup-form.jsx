@@ -18,6 +18,10 @@ import Link from "next/link";
 export function SignupForm({
   ...props
 }) {
+
+  let handleSubmit=()=>{
+    //later we sent the data to backend
+  }
   return (
     <Card {...props}>
       <CardHeader>
@@ -27,7 +31,7 @@ export function SignupForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>

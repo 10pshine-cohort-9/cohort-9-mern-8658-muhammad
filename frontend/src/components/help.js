@@ -43,7 +43,7 @@ const faqs = [
   {
     question: "How is my data stored?",
     answer:
-      "In this demo, notes live in your browser's local storage — nothing is sent to a server.",
+    "Your notes are securely stored in the cloud and synced across your devices when you're signed in. Data is transmitted over encrypted connections, so you can access your notes anywhere with your account.",
   },
   {
     question: "Can I import from another app?",
