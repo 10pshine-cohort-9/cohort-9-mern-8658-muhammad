@@ -11,7 +11,7 @@ import { MoreVertical, Pin, Star } from "lucide-react";
 
 function Notes({
   title,
-  category,
+  category, 
   content,
   tags,
   createdAt,

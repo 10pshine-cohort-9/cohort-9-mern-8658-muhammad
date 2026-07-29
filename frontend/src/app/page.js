@@ -267,7 +267,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <Link href="/about" className="hover:text-foreground">About</Link>
             <Link href="/help" className="hover:text-foreground">Help</Link>
-            <Link href="/login" className="hover:text-foreground">Sign in</Link>
+            <Link href="/auth/login" className="hover:text-foreground">Sign in</Link>
           </div>
         </div>
       </footer>
