@@ -1,7 +1,7 @@
 import Notes from '@/components/notes'
 function page() {
   return (
-    <div className='m-4 grid grid-cols-3 gap-3 dark:bg-[#070811] min-h-screen'>
+    <div className='m-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 dark:bg-[#070811] min-h-screen'>
         <Notes/>
         <Notes/>
         <Notes/>
