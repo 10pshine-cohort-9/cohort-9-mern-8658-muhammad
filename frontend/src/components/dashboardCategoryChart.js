@@ -30,8 +30,18 @@ export default function CategoriesCard() {
       <CardContent>
         <div className="flex items-center justify-between gap-6">
           <div className="h-44 w-44 mt-16">
-            <ResponsiveContainer width="100%" height="100%" >
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: "16px",
+                    border: "1px solid #e5e7eb",
+                    backgroundColor: "#fff",
+                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                  }}
+                  cursor={false}
+                />
+
                 <Pie
                   data={chartData}
                   dataKey="value"
@@ -43,17 +53,6 @@ export default function CategoriesCard() {
                   stroke="white"
                   strokeWidth={5}
                 >
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: "16px",
-                      border: "1px solid #e5e7eb",
-                      backgroundColor: "#fff",
-                      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                    }}
-                    cursor={false}
-                  >
-                    {" "}
-                  </Tooltip>
                   {chartData.map((entry) => (
                     <Cell key={entry.name} fill={entry.color} />
                   ))}

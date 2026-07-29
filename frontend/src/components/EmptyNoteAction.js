@@ -1,28 +1,29 @@
-import React from 'react'
-import { Button } from './ui/button'
-import { File, Plus } from 'lucide-react'
+import React from "react";
+import { Button } from "./ui/button";
+import { File, Plus } from "lucide-react";
 
 function EmptyNoteAction() {
   return (
     <div className="mt-6 flex h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed bg-[#FBFDFF] dark:bg-[#0D0F1D]">
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-r from-violet-500 to-sky-500">
-            <File className="h-8 w-8 text-white" />
-          </div>
+      <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-r from-violet-500 to-sky-500">
+        <File className="h-8 w-8 text-white" />
+      </div>
 
-          <h2 className="mt-6 text-3xl font-bold">
-            No notes here yet
-          </h2>
+      <h2 className="mt-6 text-3xl font-bold">No notes here yet</h2>
 
-          <p className="mt-2 text-muted-foreground">
-            Create your first note and it will appear right here.
-          </p>
+      <p className="mt-2 text-muted-foreground">
+        Create your first note and it will appear right here.
+      </p>
 
-          <Button onClick={()=>{}} className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500">
-            <Plus className="mr-2 h-4 w-4" />
-            Create note
-          </Button>
-        </div>
-  )
+      <Button
+        onClick={() => {}}
+        className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Create note
+      </Button>
+    </div>
+  );
 }
 
-export default EmptyNoteAction
+export default EmptyNoteAction;

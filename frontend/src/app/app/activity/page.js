@@ -3,6 +3,7 @@
 import {
   Archive,
   ArchiveRestore,
+  CircleHelp,
   Pencil,
   Pin,
   PinOff,
@@ -125,6 +126,12 @@ unarchive: {
 
 };
 
+const defaultActivityConfig = {
+  icon: CircleHelp,
+  title: "Activity",
+  color: "text-muted-foreground",
+};
+
 function page() {
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
@@ -136,7 +143,8 @@ function page() {
 
       <Card className="mt-8 overflow-hidden rounded-3xl gap-0 p-0 dark:bg-[#101321]">
         {activities.map((activity, index) => {
-          const config = activityConfig[activity.action];
+          const config =
+    activityConfig[activity.action] ?? defaultActivityConfig;
 
           const Icon = config.icon;
 

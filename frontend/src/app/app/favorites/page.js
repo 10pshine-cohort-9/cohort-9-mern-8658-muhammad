@@ -29,7 +29,7 @@ const notes = [
 ];
 
 function Page() {
-
+  const favoriteNotes = notes.filter((note) => note.favorite);
 
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6 font-sans">

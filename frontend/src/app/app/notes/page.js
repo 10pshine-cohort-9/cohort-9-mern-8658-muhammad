@@ -13,8 +13,8 @@ const notes = [
     title: "Welcome to NoteSphere ✨",
     category: "Personal",
     content:
-      "Hello there! This is your first note. Try creating a new one, favorite it, or archive it. Everything is stored locally in your browser.",
-    tags: ["intro", "welcome"],
+  "Hello there! This is your first note. Try creating a new one, favorite it, or archive it to explore NoteSphere's features.",
+      tags: ["intro", "welcome"],
     createdAt: "2 days ago",
     favorite: false,
     pinned: true,
@@ -44,6 +44,10 @@ export default function Page() {
     return notes.filter((note) => note.category === selectedCategory);
   }, [selectedCategory]);
 
+  let handlenewNote=()=>{
+    // implement later
+  }
+
   return (
     <div className="min-h-screen bg-[#F9FAFE] p-6 dark:bg-[#070811]">
       <div className="flex items-start justify-between">
@@ -59,6 +63,9 @@ export default function Page() {
         <div className="flex items-center gap-4">
           <div className="flex overflow-hidden rounded-xl border bg-white dark:bg-[#0D0F1D]">
             <button
+             type="button"
+              aria-label="Grid view"
+              aria-pressed={gridView}
               onClick={() => setGridView(true)}
               className={`border-r p-3 transition ${
                 gridView ? "bg-violet-100 text-violet-600" : "hover:bg-muted"
@@ -68,6 +75,9 @@ export default function Page() {
             </button>
 
             <button
+             type="button"
+             aria-label="List view"
+             aria-pressed={!gridView}
               onClick={() => setGridView(false)}
               className={`p-3 transition ${
                 !gridView ? "bg-violet-100 text-violet-600" : "hover:bg-muted"
@@ -77,7 +87,7 @@ export default function Page() {
             </button>
           </div>
 
-          <Button  className="rounded-xl bg-gradient-to-r from-violet-500 to-sky-500 px-5 py-6 text-white">
+          <Button onClick={()=>(handlenewNote)} className="rounded-xl bg-gradient-to-r from-violet-500 to-sky-500 px-5 py-6 text-white">
             <Plus className="mr-2 h-4 w-4" />
             New note
           </Button>
