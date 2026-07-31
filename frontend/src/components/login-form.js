@@ -1,3 +1,4 @@
+"use client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,7 +24,8 @@ export function LoginForm({
 }) {
 
 
-  let handleSubmit=()=>{
+  let handleSubmit=(e)=>{
+     e.preventDefault()
 //later we sent the data to backend
   }
   return (
@@ -36,7 +38,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit()}>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
                 <Button variant="outline" type="button">
