@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -19,7 +20,8 @@ export function SignupForm({
   ...props
 }) {
 
-  let handleSubmit=()=>{
+  let handleSubmit=(e)=>{
+    e.preventDefault()
     //later we sent the data to backend
   }
   return (
@@ -31,7 +33,7 @@ export function SignupForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit()}>
+        <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -40,14 +42,11 @@ export function SignupForm({
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input id="email" type="email" placeholder="m@example.com" required />
-              <FieldDescription>
-                We&apos;ll use this to contact you. We will not share your email
-                with anyone else.
-              </FieldDescription>
+             
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required minLength={8}  />
               <FieldDescription>
                 Must be at least 8 characters long.
               </FieldDescription>
@@ -56,7 +55,7 @@ export function SignupForm({
               <FieldLabel htmlFor="confirm-password">
                 Confirm Password
               </FieldLabel>
-              <Input id="confirm-password" type="password" required />
+              <Input id="confirm-password" type="password" required minLength={8}  />
               <FieldDescription>Please confirm your password.</FieldDescription>
             </Field>
             <FieldGroup>
