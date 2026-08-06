@@ -51,6 +51,9 @@ export class UserService {
       if (!user) throw new UnauthorizedException('User not found !');
       return user;
     } catch (error) {
+       if (error instanceof UnauthorizedException) {
+    throw error;
+  }
       throw new InternalServerErrorException('Failed to fetch user');
     }
   }
@@ -72,6 +75,9 @@ export class UserService {
       }
       return user;
     } catch (error) {
+       if (error instanceof NotFoundException) {
+    throw error;
+  }
       throw new InternalServerErrorException('Failed to fetch users');
     }
   }
@@ -112,6 +118,12 @@ export class UserService {
 
       return { message: 'User deleted successfully' };
     } catch (error) {
+      if (
+    error instanceof NotFoundException ||
+    error instanceof BadRequestException
+  ) {
+    throw error;
+  }
       throw new InternalServerErrorException('Failed to Delete Profile');
     }
   }
@@ -123,6 +135,9 @@ export class UserService {
         { hashRefreshToken: hashedRefreshToken },
       );
     } catch (error) {
+      if (error instanceof NotFoundException) {
+    throw error;
+  }
       throw new InternalServerErrorException('Failed to update token');
     }
   }

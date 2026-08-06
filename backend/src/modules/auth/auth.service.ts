@@ -47,6 +47,8 @@ async validateUser(email:string,password:string){
 
 async signUp(createUserDto:CreateUserDto){
  try {
+   const user =await this.userService.create(createUserDto)
+  return user
   
  } catch (error) {
   throw new InternalServerErrorException("Failed to create a user")

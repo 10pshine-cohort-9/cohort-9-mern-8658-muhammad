@@ -1,6 +1,7 @@
 import { Controller, Get, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import type { AuthRequest } from '../auth/interface/auth-req.interface';
 
 @Controller('user')
 export class UserController {
@@ -29,7 +30,7 @@ export class UserController {
   }
 
   @Delete()
-  remove(@Req() req) {
+  remove(@Req() req:AuthRequest) {
     return this.userService.remove(req.user.id);
   }
 }
