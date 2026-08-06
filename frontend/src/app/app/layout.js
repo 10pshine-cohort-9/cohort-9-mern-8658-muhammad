@@ -10,7 +10,7 @@ function Layout({ children }) {
     <div className="flex h-screen overflow-hidden">
       <Sidenavbar sideOpen={sideOpen} />
 
-      <div className="flex flex-1 flex-col omverflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <div>
           <TopNavBar setSideOpen={setSideOpen} />
         </div>
