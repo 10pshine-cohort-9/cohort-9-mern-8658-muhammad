@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import refreshJwtConfig from './config/refresh-jwt.config';
 import { UserService } from '../user/user.service';
 import type { ConfigType } from '@nestjs/config';
@@ -46,27 +46,41 @@ async validateUser(email:string,password:string){
 
 
 async signUp(createUserDto:CreateUserDto){
-  const user =await this.userService.create(createUserDto)
-  return user
+ try {
+  
+ } catch (error) {
+  throw new InternalServerErrorException("Failed to create a user")
+ }
 
 }
 
 async signin(userId:string){
-const {accessToken,refreshToken}=await this.generateToken(userId)
+  try {
+    const {accessToken,refreshToken}=await this.generateToken(userId)
 const hashedRefreshToken=await argon2.hash(refreshToken)
 await this.userService.updateRefreshToken(userId,hashedRefreshToken)
 return {id:userId,accessToken,refreshToken}
+  } catch (error) {
+     throw new InternalServerErrorException('Failed to sign in');
+  }
+
 }
 
 
 async generateToken(userId:string){
-const payload:AuthJwtPayload={sub:userId}
+try {
+  
+  const payload:AuthJwtPayload={sub:userId}
 const [accessToken,refreshToken]=await Promise.all([
   this.jwtServices.signAsync(payload),
   this.jwtServices.signAsync(payload,this.refreshTokenConfig)
 ])
 return {
   accessToken,refreshToken
+}
+} catch (error) {
+  throw new InternalServerErrorException("Failed to sign in")
+  
 }
 }
 
@@ -76,17 +90,26 @@ return {
 
 
 async refreshToken(userId:string){
-  const {accessToken,refreshToken}= await this.generateToken(userId)
+  try {
+    const {accessToken,refreshToken}= await this.generateToken(userId)
   const hashedRefreshToken=await argon2.hash(refreshToken)
   await this.userService.updateRefreshToken(userId,hashedRefreshToken)
 return {id:userId,accessToken,refreshToken}
+  } catch (error) {
+    throw new InternalServerErrorException("Failed to validate refresh token")
+  }
 }
 
 
 
 
 async signOut(userId:string){
-  await this.userService.updateRefreshToken(userId,null)
+ try {
+   await this.userService.updateRefreshToken(userId,null)
+  return {message:"Signed out successfully"}
+ } catch (error) {
+  throw new InternalServerErrorException("Failed to Sign out")
+ }
 }
 
 

@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserStatus } from "../enums/useStatus";
 import * as bcrypt from 'bcrypt'
+import { InternalServerErrorException } from "@nestjs/common";
 
 
 @Entity()
@@ -36,7 +37,11 @@ export class User {
 
     @BeforeInsert()
     async hashingPassword(){
-        this.passwordHash=await bcrypt.hash(this.passwordHash,10)
+        try {
+            this.passwordHash=await bcrypt.hash(this.passwordHash,10)
+        } catch (error) {
+            throw new InternalServerErrorException("Failed to hash user password")
+        }
     }
 
 }

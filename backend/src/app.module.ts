@@ -16,14 +16,12 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth/jwt-auth.guard';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: "postgres",
-        port: config.get<number>("DB_HOST"),
+        port: config.get<number>("DB_PORT"),
         host: config.get<string>("DB_HOST"),
         username: config.get<string>("DB_USERNAME"),
         password: config.get<string>("DB_PASSWORD"),
         database: config.get<string>("DB_DATABASE"),
-        entities: [__dirname, '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-    
+        synchronize: config.get("DB_SYNCHRONIZE")
       }),
     }),
     AuthModule,

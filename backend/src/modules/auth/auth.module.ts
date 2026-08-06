@@ -14,7 +14,7 @@ import { RefreshJwtStrategy } from './strategies/refresh.strategy';
   imports: [
     UserModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
-    JwtModule.registerAsync(refreshJwtConfig.asProvider()),
+   
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
   ],
