@@ -36,6 +36,9 @@ export class UserService {
       const { passwordHash, hashRefreshToken, ...result } = user;
       return result;
     } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('Email already exists');
+      }
       if (error instanceof ConflictException) {
         throw error;
       }
@@ -51,9 +54,9 @@ export class UserService {
       if (!user) throw new UnauthorizedException('User not found !');
       return user;
     } catch (error) {
-       if (error instanceof UnauthorizedException) {
-    throw error;
-  }
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to fetch user');
     }
   }
@@ -75,9 +78,9 @@ export class UserService {
       }
       return user;
     } catch (error) {
-       if (error instanceof NotFoundException) {
-    throw error;
-  }
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to fetch users');
     }
   }
@@ -107,7 +110,12 @@ export class UserService {
         await this.findOne(userId);
       return result;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to Update Profile');
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
     }
   }
 
@@ -119,25 +127,29 @@ export class UserService {
       return { message: 'User deleted successfully' };
     } catch (error) {
       if (
-    error instanceof NotFoundException ||
-    error instanceof BadRequestException
-  ) {
-    throw error;
-  }
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to Delete Profile');
     }
   }
 
   async updateRefreshToken(userId: string, hashedRefreshToken: string | null) {
     try {
-      return await this.userRepo.update(
+      const result = await this.userRepo.update(
         { id: userId },
         { hashRefreshToken: hashedRefreshToken },
       );
+      if (result.affected === 0) {
+        throw new NotFoundException('User not found');
+      }
+      return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
-    throw error;
-  }
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to update token');
     }
   }

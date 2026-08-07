@@ -21,7 +21,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth/jwt-auth.guard';
         username: config.get<string>("DB_USERNAME"),
         password: config.get<string>("DB_PASSWORD"),
         database: config.get<string>("DB_DATABASE"),
-        synchronize: config.get("DB_SYNCHRONIZE")
+        synchronize: config.get("DB_SYNCHRONIZE"),
+        autoLoadEntities:true,
       }),
     }),
     AuthModule,
