@@ -7,18 +7,6 @@ import type { AuthRequest } from '../auth/interface/auth-req.interface';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-
-
-
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
-
   @Get()
   findOne(@Req() req) {
     return this.userService.userProfile(req.user.id);

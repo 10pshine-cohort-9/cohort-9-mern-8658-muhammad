@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from './modules/auth/config/jwt.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth/jwt-auth.guard';
+import { NoteModule } from './modules/note/note.module';
+import { ActivityModule } from './modules/activity/activity.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth/jwt-auth.guard';
     AuthModule,
     UserModule,
     ConfigModule.forRoot({ isGlobal: true, load: [jwtConfig] }),
+    NoteModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
