@@ -98,8 +98,9 @@ export class NoteService {
     return { message: 'Deleted Successfully' };
   }
 
-  async pinned(id: string, userId: string, pinned: boolean) {
+  async pinned(id: string, userId: string) {
     const note = await this.findOne(id, userId);
+    const pinned = !note.pinned;
     const updatePinned = await this.noteRepo.update(
       { id: id, user: { id: userId } },
       { pinned },
@@ -114,16 +115,23 @@ export class NoteService {
       action: pinned ? ActivityType.NOTE_PINNED : ActivityType.NOTE_UNPINNED,
       message: `${pinned ? 'Pinned' : 'UnPinned'} "${note.title}"`,
     });
-    return { message: pinned ? 'Pinned' : 'UnPinned' };
+    return {
+      message: pinned ? 'Pinned' : 'UnPinned',
+      note: {
+        ...note,
+        pinned,
+      },
+    };
   }
 
-  async favorite(id: string, userId: string, favorite: boolean) {
+  async favorite(id: string, userId: string) {
     const note = await this.findOne(id, userId);
-    const updatePinned = await this.noteRepo.update(
+    const favorite = !note.favorite;
+    const updatefavorite = await this.noteRepo.update(
       { id: id, user: { id: userId } },
       { favorite },
     );
-    if (updatePinned.affected === 0) {
+    if (updatefavorite.affected === 0) {
       throw new NotFoundException('Note not found');
     }
     await this.activityService.create({
@@ -135,16 +143,23 @@ export class NoteService {
       message: `${favorite ? 'Added to favorites' : 'Removed from favorites'} "${note.title}"`,
     });
 
-    return { message: favorite ? 'Favorite' : 'UnFavorite' };
+    return {
+      message: favorite ? 'Favorite' : 'UnFavorite',
+      note: {
+        ...note,
+        favorite,
+      },
+    };
   }
 
-  async archived(id: string, userId: string, archived: boolean) {
+  async archived(id: string, userId: string) {
     const note = await this.findOne(id, userId);
-    const updatePinned = await this.noteRepo.update(
+    const archived = !note.archived;
+    const updatearchived = await this.noteRepo.update(
       { id: id, user: { id: userId } },
       { archived },
     );
-    if (updatePinned.affected === 0) {
+    if (updatearchived.affected === 0) {
       throw new NotFoundException('Note not found');
     }
     await this.activityService.create({
@@ -155,7 +170,13 @@ export class NoteService {
         : ActivityType.NOTE_UNARCHIVED,
       message: `${archived ? 'Added to Archived' : 'Removed from Archived'} "${note.title}"`,
     });
-    return { message: archived ? 'Archived' : 'UnArchived' };
+    return {
+      message: archived ? 'Archived' : 'UnArchived',
+      note: {
+        ...note,
+        archived,
+      },
+    };
   }
 
   async getArchieved(userId: string) {
