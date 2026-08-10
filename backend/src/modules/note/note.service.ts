@@ -3,7 +3,7 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Note } from './entities/note.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { ActivityService } from '../activity/activity.service';
 import { ActivityType } from '../activity/enums/action.enum';
@@ -11,25 +11,34 @@ import { ActivityType } from '../activity/enums/action.enum';
 @Injectable()
 export class NoteService {
   constructor(
-    @InjectRepository(Note) private noteRepo: Repository<Note>,
+    @InjectRepository(Note)
+    private noteRepo: Repository<Note>,
     private activityService: ActivityService,
+    private dataSource: DataSource,
   ) {}
 
   async create(userId: string, createNoteDto: CreateNoteDto) {
-    const note = this.noteRepo.create({
-      ...createNoteDto,
-      user: { id: userId },
-    });
-    const savedNote = await this.noteRepo.save(note);
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
 
-    await this.activityService.create({
-      userId,
-      noteId: savedNote.id,
-      action: ActivityType.NOTE_CREATED,
-      message: `Created "${savedNote.title}"`,
-    });
+      const note = repo.create({
+        ...createNoteDto,
+        user: { id: userId },
+      });
+      const savedNote = await repo.save(note);
 
-    return savedNote;
+      await this.activityService.create(
+        {
+          userId,
+          noteId: savedNote.id,
+          action: ActivityType.NOTE_CREATED,
+          message: `Created "${savedNote.title}"`,
+        },
+        manager,
+      );
+
+      return savedNote;
+    });
   }
 
   async findAll(userId: string) {
@@ -44,8 +53,12 @@ export class NoteService {
     return notes;
   }
 
-  async findOne(id: string, userId: string) {
-    const note = await this.noteRepo.findOne({
+  async findOne(
+    id: string,
+    userId: string,
+    repo: Repository<Note> = this.noteRepo,
+  ) {
+    const note = await repo.findOne({
       where: {
         user: {
           id: userId,
@@ -61,122 +74,186 @@ export class NoteService {
   }
 
   async update(userId: string, id: string, updateNoteDto: UpdateNoteDto) {
-    const updatenote = await this.noteRepo.update(
-      { id, user: { id: userId } },
-      updateNoteDto,
-    );
-    if (updatenote.affected === 0) {
-      throw new NotFoundException('Note not found');
-    }
-    const note = await this.findOne(id, userId);
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
 
-    await this.activityService.create({
-      userId,
-      noteId: note.id,
-      action: ActivityType.NOTE_UPDATED,
-      message: `Updated "${note.title}"`,
+      const updatenote = await repo.update(
+        { id, user: { id: userId } },
+        updateNoteDto,
+      );
+      if (updatenote.affected === 0) {
+        throw new NotFoundException('Note not found');
+      }
+      const note = await this.findOne(id, userId, repo);
+
+      await this.activityService.create(
+        {
+          userId,
+          noteId: note.id,
+          action: ActivityType.NOTE_UPDATED,
+          message: `Updated "${note.title}"`,
+        },
+        manager,
+      );
+      return note;
     });
-    return note;
   }
 
   async remove(id: string, userId: string) {
-    const note = await this.findOne(id, userId);
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
 
-    const deletenote = await this.noteRepo.delete({
-      id: id,
-      user: { id: userId },
-    });
-    if (deletenote.affected === 0) {
-      throw new NotFoundException('Note not found');
-    }
-    await this.activityService.create({
-      userId,
-      action: ActivityType.NOTE_DELETED,
-      message: `Deleted "${note.title}"`,
-    });
+      const note = await this.findOne(id, userId, repo);
 
-    return { message: 'Deleted Successfully' };
+      const deletenote = await repo.delete({
+        id: id,
+        user: { id: userId },
+      });
+      if (deletenote.affected === 0) {
+        throw new NotFoundException('Note not found');
+      }
+      await this.activityService.create(
+        {
+          userId,
+          action: ActivityType.NOTE_DELETED,
+          message: `Deleted "${note.title}"`,
+        },
+        manager,
+      );
+
+      return { message: 'Deleted Successfully' };
+    });
   }
 
   async pinned(id: string, userId: string) {
-    const note = await this.findOne(id, userId);
-    const pinned = !note.pinned;
-    const updatePinned = await this.noteRepo.update(
-      { id: id, user: { id: userId } },
-      { pinned },
-    );
-    if (updatePinned.affected === 0) {
-      throw new NotFoundException('Note not found');
-    }
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
 
-    await this.activityService.create({
-      userId,
-      noteId: note.id,
-      action: pinned ? ActivityType.NOTE_PINNED : ActivityType.NOTE_UNPINNED,
-      message: `${pinned ? 'Pinned' : 'UnPinned'} "${note.title}"`,
+      const note = await repo
+        .createQueryBuilder('note')
+        .leftJoin('note.user', 'user')
+        .setLock('pessimistic_write')
+        .where('note.id=:id', { id })
+        .andWhere('user.id = :userId', { userId })
+        .getOne();
+
+      if (!note) {
+        throw new NotFoundException('Note not found');
+      }
+
+      const pinned = !note.pinned;
+      await repo.update({ id, user: { id: userId } }, { pinned });
+
+      await this.activityService.create(
+        {
+          userId,
+          noteId: note.id,
+          action: pinned
+            ? ActivityType.NOTE_PINNED
+            : ActivityType.NOTE_UNPINNED,
+          message: `${pinned ? 'Pinned' : 'UnPinned'} "${note.title}"`,
+        },
+        manager,
+      );
+      return {
+        message: pinned ? 'Pinned' : 'UnPinned',
+        note: {
+          ...note,
+          pinned,
+        },
+      };
     });
-    return {
-      message: pinned ? 'Pinned' : 'UnPinned',
-      note: {
-        ...note,
-        pinned,
-      },
-    };
   }
 
   async favorite(id: string, userId: string) {
-    const note = await this.findOne(id, userId);
-    const favorite = !note.favorite;
-    const updatefavorite = await this.noteRepo.update(
-      { id: id, user: { id: userId } },
-      { favorite },
-    );
-    if (updatefavorite.affected === 0) {
-      throw new NotFoundException('Note not found');
-    }
-    await this.activityService.create({
-      userId,
-      noteId: note.id,
-      action: favorite
-        ? ActivityType.NOTE_FAVORITED
-        : ActivityType.NOTE_UNFAVORITED,
-      message: `${favorite ? 'Added to favorites' : 'Removed from favorites'} "${note.title}"`,
-    });
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
 
-    return {
-      message: favorite ? 'Favorite' : 'UnFavorite',
-      note: {
-        ...note,
-        favorite,
-      },
-    };
+      const note = await repo
+        .createQueryBuilder('note')
+        .leftJoin('note.user', 'user')
+        .setLock('pessimistic_write')
+        .where('note.id=:id', { id })
+        .andWhere('user.id = :userId', { userId })
+        .getOne();
+
+      if (!note) {
+        throw new NotFoundException('Note not found');
+      }
+
+      const favorite = !note.favorite;
+      const updatefavorite = await repo.update(
+        { id: id, user: { id: userId } },
+        { favorite },
+      );
+      if (updatefavorite.affected === 0) {
+        throw new NotFoundException('Note not found');
+      }
+      await this.activityService.create(
+        {
+          userId,
+          noteId: note.id,
+          action: favorite
+            ? ActivityType.NOTE_FAVORITED
+            : ActivityType.NOTE_UNFAVORITED,
+          message: `${favorite ? 'Added to favorites' : 'Removed from favorites'} "${note.title}"`,
+        },
+        manager,
+      );
+
+      return {
+        message: favorite ? 'Favorite' : 'UnFavorite',
+        note: {
+          ...note,
+          favorite,
+        },
+      };
+    });
   }
 
   async archived(id: string, userId: string) {
-    const note = await this.findOne(id, userId);
-    const archived = !note.archived;
-    const updatearchived = await this.noteRepo.update(
-      { id: id, user: { id: userId } },
-      { archived },
-    );
-    if (updatearchived.affected === 0) {
-      throw new NotFoundException('Note not found');
-    }
-    await this.activityService.create({
-      userId,
-      noteId: note.id,
-      action: archived
-        ? ActivityType.NOTE_ARCHIVED
-        : ActivityType.NOTE_UNARCHIVED,
-      message: `${archived ? 'Added to Archived' : 'Removed from Archived'} "${note.title}"`,
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Note);
+
+      const note = await repo
+        .createQueryBuilder('note')
+        .leftJoin('note.user', 'user')
+        .setLock('pessimistic_write')
+        .where('note.id=:id', { id })
+        .andWhere('user.id = :userId', { userId })
+        .getOne();
+
+      if (!note) {
+        throw new NotFoundException('Note not found');
+      }
+
+      const archived = !note.archived;
+      const updatearchived = await repo.update(
+        { id: id, user: { id: userId } },
+        { archived },
+      );
+      if (updatearchived.affected === 0) {
+        throw new NotFoundException('Note not found');
+      }
+      await this.activityService.create(
+        {
+          userId,
+          noteId: note.id,
+          action: archived
+            ? ActivityType.NOTE_ARCHIVED
+            : ActivityType.NOTE_UNARCHIVED,
+          message: `${archived ? 'Added to Archived' : 'Removed from Archived'} "${note.title}"`,
+        },
+        manager,
+      );
+      return {
+        message: archived ? 'Archived' : 'UnArchived',
+        note: {
+          ...note,
+          archived,
+        },
+      };
     });
-    return {
-      message: archived ? 'Archived' : 'UnArchived',
-      note: {
-        ...note,
-        archived,
-      },
-    };
   }
 
   async getArchieved(userId: string) {

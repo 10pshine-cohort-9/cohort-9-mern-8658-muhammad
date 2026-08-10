@@ -2,15 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from './entities/activity.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class ActivityService {
   constructor(
     @InjectRepository(Activity) private actRepo: Repository<Activity>,
   ) {}
-  async create(createActivityDto: CreateActivityDto) {
-    const newactivity = this.actRepo.create({
+  async create(createActivityDto: CreateActivityDto, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(Activity) : this.actRepo;
+
+    const newactivity = repo.create({
       action: createActivityDto.action,
       message: createActivityDto.message,
       user: { id: createActivityDto.userId },
@@ -18,7 +20,7 @@ export class ActivityService {
         ? { id: createActivityDto.noteId }
         : undefined,
     });
-    return await this.actRepo.save(newactivity);
+    return await repo.save(newactivity);
   }
 
   async findAll(userId: string) {
