@@ -1,7 +1,9 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserStatus } from "../enums/useStatus";
 import * as bcrypt from 'bcrypt'
 import { InternalServerErrorException } from "@nestjs/common";
+import { Note } from "src/modules/note/entities/note.entity";
+import { Activity } from "src/modules/activity/entities/activity.entity";
 
 
 @Entity()
@@ -33,7 +35,12 @@ export class User {
     @UpdateDateColumn()
     updatedAt:Date
 
+    @OneToMany(()=>Note,(notes=>notes.user))
+    notes:Note[];
 
+    @OneToMany(()=>Activity,(act=>act.user))
+    activities:Activity[];
+ 
 
     @BeforeInsert()
     async hashingPassword(){
