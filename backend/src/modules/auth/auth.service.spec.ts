@@ -25,6 +25,8 @@ jest.mock('bcrypt', () => ({
   compare: jest.fn(),
 }));
 
+const mockedArgon2 = jest.mocked(argon2);
+
 describe('Auth Service', () => {
   let service: AuthService;
 
@@ -106,11 +108,11 @@ describe('Auth Service', () => {
     const refreshToken = 'refresh-token';
     const user = { id: userId, hashRefreshToken: 'hashed-refresh-token' };
     mockUserService.findOne.mockResolvedValue(user);
-    argon2.verify.mockResolvedValue(true);
+    mockedArgon2.verify.mockResolvedValue(true);
 
     const result = await service.validateRefreshToken(userId, refreshToken);
     expect(mockUserService.findOne).toHaveBeenCalledWith(userId);
-    expect(argon2.verify).toHaveBeenCalledWith(
+    expect(mockedArgon2.verify).toHaveBeenCalledWith(
       user.hashRefreshToken,
       refreshToken,
     );
@@ -131,7 +133,7 @@ describe('Auth Service', () => {
     const userId = 'abcd-1234';
     const user = { id: userId, hashRefreshToken: 'hashed-refresh-token' };
     mockUserService.findOne.mockResolvedValue(user);
-    argon2.verify.mockResolvedValue(false);
+    mockedArgon2.verify.mockResolvedValue(false);
     await expect(
       service.validateRefreshToken(userId, 'wrong-refresh-token'),
     ).rejects.toThrow(new UnauthorizedException('Invalid Refresh Token'));
@@ -240,12 +242,12 @@ describe('Auth Service', () => {
       accessToken: 'access-token',
       refreshToken: 'refresh-token',
     });
-    argon2.hash.mockResolvedValue('hashed-refresh-token');
+    mockedArgon2.hash.mockResolvedValue('hashed-refresh-token');
 
     mockUserService.updateRefreshToken.mockResolvedValue(undefined);
     const result = await service.signin(userId);
     expect(service.generateToken).toHaveBeenCalledWith(userId);
-    expect(argon2.hash).toHaveBeenCalledWith('refresh-token');
+    expect(mockedArgon2.hash).toHaveBeenCalledWith('refresh-token');
     expect(mockUserService.updateRefreshToken).toHaveBeenCalledWith(
       userId,
       'hashed-refresh-token',
@@ -273,7 +275,7 @@ describe('Auth Service', () => {
       refreshToken: 'new-refresh-token',
     });
 
-    argon2.hash.mockResolvedValue('new-hashed-refresh-token');
+    mockedArgon2.hash.mockResolvedValue('new-hashed-refresh-token');
 
     mockUserService.updateRefreshToken.mockResolvedValue(undefined);
     const result = await service.refreshToken(userId);

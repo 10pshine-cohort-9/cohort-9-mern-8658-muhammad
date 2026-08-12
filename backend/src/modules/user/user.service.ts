@@ -29,10 +29,7 @@ export class UserService {
       });
 
       if (existingUser) {
-        this.logger.warn(
-          { email: createUserDto.email },
-          'User registartion attempt with existing email',
-        );
+        this.logger.warn('User registration attempt with existing email');
         throw new ConflictException('Email already exists');
       }
       const user = this.userRepo.create({
@@ -40,22 +37,19 @@ export class UserService {
         email: createUserDto.email.toLowerCase().trim(),
         passwordHash: createUserDto.password,
       });
+      const savedUser = await this.userRepo.save(user);
       this.logger.info(
         {
-          userId: user.id,
-          email: user.email,
+          userId: savedUser.id,
         },
         'User created successfully',
       );
-      await this.userRepo.save(user);
+
       const { passwordHash, hashRefreshToken, ...result } = user;
       return result;
     } catch (error) {
       if (error.code === '23505') {
-        this.logger.warn(
-          { email: createUserDto.email },
-          'User creation failed: email already exists',
-        );
+        this.logger.warn('User registration failed: duplicate email');
 
         throw new ConflictException('Email already exists');
       }
@@ -66,7 +60,6 @@ export class UserService {
       this.logger.error(
         {
           err: error,
-          email: createUserDto.email,
         },
         'Failed to create user',
       );

@@ -7,7 +7,7 @@ import { AuthRequest } from '../auth/interface/auth-req.interface';
 describe('ActivityController', () => {
   let controller: ActivityController;
   const mockService = {
-    findAll: jest.fn(),
+    findAll: jest.fn() as jest.MockedFunction<ActivityService['findAll']>,
   };
 
   beforeEach(async () => {

@@ -14,11 +14,19 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { PinoLogger } from 'nestjs-pino';
+import { Repository } from 'typeorm';
 
 describe('UserService', () => {
   let service: UserService;
 
-  const mockRepo = {
+  type MockUserRepository = Pick<
+    Repository<User>,
+    'findOne' | 'find' | 'create' | 'save' | 'update' | 'delete'
+  >;
+
+  type MockLogger = Pick<PinoLogger, 'info' | 'warn' | 'error'>;
+
+  const mockRepo: jest.Mocked<MockUserRepository> = {
     findOne: jest.fn(),
     find: jest.fn(),
     create: jest.fn(),
@@ -27,7 +35,7 @@ describe('UserService', () => {
     delete: jest.fn(),
   };
 
-  const mockLogger = {
+  const mockLogger: jest.Mocked<MockLogger> = {
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),

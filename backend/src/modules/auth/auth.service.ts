@@ -141,15 +141,27 @@ export class AuthService {
   }
 
   async generateToken(userId: string) {
-    const payload: AuthJwtPayload = { sub: userId };
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtServices.signAsync(payload),
-      this.jwtServices.signAsync(payload, this.refreshTokenConfig),
-    ]);
-    return {
-      accessToken,
-      refreshToken,
-    };
+    try {
+      const payload: AuthJwtPayload = { sub: userId };
+      const [accessToken, refreshToken] = await Promise.all([
+        this.jwtServices.signAsync(payload),
+        this.jwtServices.signAsync(payload, this.refreshTokenConfig),
+      ]);
+      return {
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      this.logger.error(
+        {
+          err: error,
+          userId,
+        },
+        'Token generation failed',
+      );
+
+      throw new InternalServerErrorException('Failed to generate tokens');
+    }
   }
 
   async refreshToken(userId: string) {

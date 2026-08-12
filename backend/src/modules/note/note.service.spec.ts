@@ -8,7 +8,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NoteService } from './note.service';
 import { Note } from './entities/note.entity';
 import { ActivityService } from '../activity/activity.service';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { PinoLogger } from 'nestjs-pino';
 import { ActivityType } from '../activity/enums/action.enum';
 
@@ -49,9 +49,10 @@ describe('NoteService', () => {
 
     mockManager.getRepository.mockReturnValue(mockRepo);
 
-    mockDataSource.transaction.mockImplementation(async (callback: any) => {
-      return callback(mockManager);
-    });
+    mockDataSource.transaction.mockImplementation(
+      async (callback: (manager: EntityManager) => Promise<unknown>) =>
+        callback(mockManager as unknown as EntityManager),
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

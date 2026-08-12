@@ -40,7 +40,7 @@ export class NoteService {
       this.logger.info(
         {
           userId,
-          notId: note.id,
+          noteId: savedNote.id,
         },
         'Note Created',
       );
@@ -74,7 +74,7 @@ export class NoteService {
       },
     });
     if (!note) {
-      this.logger.warn({ userId, noteId: id }, 'Note no found');
+      this.logger.warn({ userId, noteId: id }, 'Note not found');
       throw new NotFoundException('Note not found');
     }
 

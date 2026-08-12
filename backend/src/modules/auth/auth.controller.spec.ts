@@ -99,9 +99,7 @@ describe('AuthController', () => {
     const req = { user: { id: 'abcd-1234-0000-0000' } };
     mockService.signOut.mockResolvedValue(message);
     const result = await controller.signout(req);
-    expect(mockService.refreshToken).toHaveBeenCalledWith(
-      'abcd-1234-0000-0000',
-    );
+    expect(mockService.signOut).toHaveBeenCalledWith('abcd-1234-0000-0000');
     expect(result).toEqual(message);
   });
 });
