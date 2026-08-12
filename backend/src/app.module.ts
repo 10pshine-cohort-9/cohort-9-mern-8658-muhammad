@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth/jwt-auth.guard';
 import { NoteModule } from './modules/note/note.module';
 import { ActivityModule } from './modules/activity/activity.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -17,14 +18,14 @@ import { ActivityModule } from './modules/activity/activity.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        type: "postgres",
-        port: config.get<number>("DB_PORT"),
-        host: config.get<string>("DB_HOST"),
-        username: config.get<string>("DB_USERNAME"),
-        password: config.get<string>("DB_PASSWORD"),
-        database: config.get<string>("DB_DATABASE"),
-        synchronize: config.get("DB_SYNCHRONIZE"),
-        autoLoadEntities:true,
+        type: 'postgres',
+        port: config.get<number>('DB_PORT'),
+        host: config.get<string>('DB_HOST'),
+        username: config.get<string>('DB_USERNAME'),
+        password: config.get<string>('DB_PASSWORD'),
+        database: config.get<string>('DB_DATABASE'),
+        synchronize: config.get('DB_SYNCHRONIZE'),
+        autoLoadEntities: true,
       }),
     }),
     AuthModule,
@@ -32,6 +33,11 @@ import { ActivityModule } from './modules/activity/activity.module';
     ConfigModule.forRoot({ isGlobal: true, load: [jwtConfig] }),
     NoteModule,
     ActivityModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'info',
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

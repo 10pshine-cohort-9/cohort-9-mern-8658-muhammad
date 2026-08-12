@@ -11,10 +11,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+    private readonly logger: PinoLogger,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -25,6 +29,10 @@ export class UserService {
       });
 
       if (existingUser) {
+        this.logger.warn(
+          { email: createUserDto.email },
+          'User registartion attempt with existing email',
+        );
         throw new ConflictException('Email already exists');
       }
       const user = this.userRepo.create({
@@ -32,16 +40,37 @@ export class UserService {
         email: createUserDto.email.toLowerCase().trim(),
         passwordHash: createUserDto.password,
       });
+      this.logger.info(
+        {
+          userId: user.id,
+          email: user.email,
+        },
+        'User created successfully',
+      );
       await this.userRepo.save(user);
       const { passwordHash, hashRefreshToken, ...result } = user;
       return result;
     } catch (error) {
       if (error.code === '23505') {
+        this.logger.warn(
+          { email: createUserDto.email },
+          'User creation failed: email already exists',
+        );
+
         throw new ConflictException('Email already exists');
       }
+
       if (error instanceof ConflictException) {
         throw error;
       }
+      this.logger.error(
+        {
+          err: error,
+          email: createUserDto.email,
+        },
+        'Failed to create user',
+      );
+
       throw new InternalServerErrorException('Failed to create user');
     }
   }
@@ -57,6 +86,8 @@ export class UserService {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
+      this.logger.error({ err: error }, 'Failed to fetch user by email');
+
       throw new InternalServerErrorException('Failed to fetch user');
     }
   }
@@ -66,6 +97,8 @@ export class UserService {
       const users = await this.userRepo.find();
       return users.map(({ passwordHash, hashRefreshToken, ...rest }) => rest);
     } catch (error) {
+      this.logger.error({ err: error }, 'Failed to fetch users');
+
       throw new InternalServerErrorException('Failed to fetch users');
     }
   }
@@ -81,6 +114,13 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      this.logger.error(
+        {
+          err: error,
+          userId: id,
+        },
+        'Failed to fetch user',
+      );
       throw new InternalServerErrorException('Failed to fetch users');
     }
   }
@@ -94,6 +134,16 @@ export class UserService {
       const { passwordHash, hashRefreshToken, ...result } = user;
       return result;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(
+        {
+          err: error,
+          userId: id,
+        },
+        'Failed to fetch user profile',
+      );
       throw new InternalServerErrorException('Failed to fetch users');
     }
   }
@@ -108,14 +158,29 @@ export class UserService {
       }
       const { passwordHash, hashRefreshToken, ...result } =
         await this.findOne(userId);
+      this.logger.info(
+        {
+          userId,
+        },
+        'User profile updated',
+      );
       return result;
     } catch (error) {
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
       ) {
+        this.logger.error(
+          {
+            err: error,
+            userId,
+          },
+          'Failed to update user profile',
+        );
+
         throw error;
       }
+      throw new InternalServerErrorException('Failed to update user profile');
     }
   }
 
@@ -132,6 +197,14 @@ export class UserService {
       ) {
         throw error;
       }
+      this.logger.error(
+        {
+          err: error,
+          userId: id,
+        },
+        'Failed to delete user',
+      );
+
       throw new InternalServerErrorException('Failed to Delete Profile');
     }
   }
@@ -150,6 +223,13 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error;
       }
+      this.logger.error(
+        {
+          err: error,
+          userId,
+        },
+        'Failed to update refresh token',
+      );
       throw new InternalServerErrorException('Failed to update token');
     }
   }
