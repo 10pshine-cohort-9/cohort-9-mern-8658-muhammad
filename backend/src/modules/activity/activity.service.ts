@@ -7,7 +7,7 @@ import { EntityManager, Repository } from 'typeorm';
 @Injectable()
 export class ActivityService {
   constructor(
-    @InjectRepository(Activity) private actRepo: Repository<Activity>,
+    @InjectRepository(Activity) private readonly actRepo: Repository<Activity>,
   ) {}
   async create(createActivityDto: CreateActivityDto, manager?: EntityManager) {
     const repo = manager ? manager.getRepository(Activity) : this.actRepo;

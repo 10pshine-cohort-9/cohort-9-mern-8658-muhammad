@@ -4,17 +4,18 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Note } from './entities/note.entity';
 import { DataSource, Repository } from 'typeorm';
-import { UserService } from '../user/user.service';
 import { ActivityService } from '../activity/activity.service';
 import { ActivityType } from '../activity/enums/action.enum';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class NoteService {
   constructor(
     @InjectRepository(Note)
-    private noteRepo: Repository<Note>,
-    private activityService: ActivityService,
-    private dataSource: DataSource,
+    private readonly noteRepo: Repository<Note>,
+    private readonly activityService: ActivityService,
+    private readonly dataSource: DataSource,
+    private readonly logger: PinoLogger,
   ) {}
 
   async create(userId: string, createNoteDto: CreateNoteDto) {
@@ -36,7 +37,13 @@ export class NoteService {
         },
         manager,
       );
-
+      this.logger.info(
+        {
+          userId,
+          noteId: savedNote.id,
+        },
+        'Note Created',
+      );
       return savedNote;
     });
   }
@@ -67,6 +74,7 @@ export class NoteService {
       },
     });
     if (!note) {
+      this.logger.warn({ userId, noteId: id }, 'Note not found');
       throw new NotFoundException('Note not found');
     }
 
@@ -95,6 +103,7 @@ export class NoteService {
         },
         manager,
       );
+
       return note;
     });
   }
@@ -120,7 +129,13 @@ export class NoteService {
         },
         manager,
       );
-
+      this.logger.info(
+        {
+          userId,
+          noteId: note.id,
+        },
+        'Note deleted',
+      );
       return { message: 'Deleted Successfully' };
     });
   }
@@ -154,6 +169,14 @@ export class NoteService {
           message: `${pinned ? 'Pinned' : 'UnPinned'} "${note.title}"`,
         },
         manager,
+      );
+      this.logger.info(
+        {
+          userId,
+          noteId: note.id,
+          pinned,
+        },
+        pinned ? 'Note pinned' : 'Note unpinned',
       );
       return {
         message: pinned ? 'Pinned' : 'UnPinned',
@@ -201,6 +224,15 @@ export class NoteService {
         manager,
       );
 
+      this.logger.info(
+        {
+          userId,
+          noteId: note.id,
+          favorite,
+        },
+        favorite ? 'Note favorited' : 'Note unfavorited',
+      );
+
       return {
         message: favorite ? 'Favorite' : 'UnFavorite',
         note: {
@@ -245,6 +277,14 @@ export class NoteService {
           message: `${archived ? 'Added to Archived' : 'Removed from Archived'} "${note.title}"`,
         },
         manager,
+      );
+      this.logger.info(
+        {
+          userId,
+          noteId: note.id,
+          archived,
+        },
+        archived ? 'Note archived' : 'Note unarchived',
       );
       return {
         message: archived ? 'Archived' : 'UnArchived',
