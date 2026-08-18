@@ -12,11 +12,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { PinoLogger } from 'nestjs-pino';
+import { Note } from '../note/entities/note.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
     private readonly logger: PinoLogger,
   ) {}
 
@@ -224,6 +226,238 @@ export class UserService {
         'Failed to update refresh token',
       );
       throw new InternalServerErrorException('Failed to update token');
+    }
+  }
+
+  async userstats(id: string) {
+    try {
+      const [counts, archived, favorite] = await Promise.all([
+        this.noteRepository.count({ where: { user: { id: id } } }),
+        this.noteRepository.count({
+          where: { user: { id: id }, archived: true },
+        }),
+        this.noteRepository.count({
+          where: { user: { id: id }, favorite: true },
+        }),
+      ]);
+      return {
+        counts,
+        archived,
+        favorite,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch Stats');
+    }
+  }
+  async dashboard(userId: string) {
+    try {
+      await this.findOne(userId);
+
+      const now = new Date();
+
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const endOfToday = new Date(now);
+      endOfToday.setHours(23, 59, 59, 999);
+
+      const startOfWeek = new Date(now);
+
+      const day = startOfWeek.getDay();
+
+      const diff = day === 0 ? 6 : day - 1;
+
+      startOfWeek.setDate(startOfWeek.getDate() - diff);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      const [
+        totalNotes,
+        favoriteNotes,
+        archivedNotes,
+        todayNotes,
+        weeklyNotes,
+        categories,
+        recentNotes,
+        pinnedNotes,
+      ] = await Promise.all([
+        this.noteRepository.count({
+          where: {
+            user: {
+              id: userId,
+            },
+          },
+        }),
+
+        this.noteRepository.count({
+          where: {
+            user: {
+              id: userId,
+            },
+            favorite: true,
+          },
+        }),
+
+        this.noteRepository.count({
+          where: {
+            user: {
+              id: userId,
+            },
+            archived: true,
+          },
+        }),
+
+        this.noteRepository
+          .createQueryBuilder('note')
+          .innerJoin('note.user', 'user')
+          .where('user.id = :userId', { userId })
+          .andWhere('note.createdAt >= :startOfToday', {
+            startOfToday,
+          })
+          .andWhere('note.createdAt <= :endOfToday', {
+            endOfToday,
+          })
+          .getCount(),
+
+        this.noteRepository
+          .createQueryBuilder('note')
+          .innerJoin('note.user', 'user')
+          .where('user.id = :userId', { userId })
+          .andWhere('note.createdAt >= :startOfWeek', {
+            startOfWeek,
+          })
+          .andWhere('note.createdAt <= :endOfWeek', {
+            endOfWeek,
+          })
+          .getMany(),
+
+        this.noteRepository
+          .createQueryBuilder('note')
+          .innerJoin('note.user', 'user')
+          .select('note.category', 'category')
+          .addSelect('COUNT(note.id)', 'count')
+          .where('user.id = :userId', { userId })
+          .groupBy('note.category')
+          .orderBy('count', 'DESC')
+          .getRawMany(),
+
+        this.noteRepository.find({
+          where: {
+            user: {
+              id: userId,
+            },
+            pinned: false,
+          },
+          order: {
+            createdAt: 'DESC',
+          },
+          take: 5,
+        }),
+
+        this.noteRepository.find({
+          where: {
+            user: {
+              id: userId,
+            },
+            pinned: true,
+          },
+          order: {
+            updatedAt: 'DESC',
+          },
+          take: 5,
+        }),
+      ]);
+
+      const weeklyMap: Record<string, number> = {
+        Mon: 0,
+        Tue: 0,
+        Wed: 0,
+        Thu: 0,
+        Fri: 0,
+        Sat: 0,
+        Sun: 0,
+      };
+
+      for (const note of weeklyNotes) {
+        const date = new Date(note.createdAt);
+
+        const dayName = date.toLocaleDateString('en-US', {
+          weekday: 'short',
+        });
+
+        if (weeklyMap[dayName] !== undefined) {
+          weeklyMap[dayName]++;
+        }
+      }
+
+      const weeklyData = [
+        {
+          date: 'Mon',
+          count: weeklyMap.Mon,
+        },
+        {
+          date: 'Tue',
+          count: weeklyMap.Tue,
+        },
+        {
+          date: 'Wed',
+          count: weeklyMap.Wed,
+        },
+        {
+          date: 'Thu',
+          count: weeklyMap.Thu,
+        },
+        {
+          date: 'Fri',
+          count: weeklyMap.Fri,
+        },
+        {
+          date: 'Sat',
+          count: weeklyMap.Sat,
+        },
+        {
+          date: 'Sun',
+          count: weeklyMap.Sun,
+        },
+      ];
+
+      return {
+        stats: {
+          totalNotes,
+          favoriteNotes,
+          archivedNotes,
+          todayNotes,
+        },
+
+        weeklyNotes: weeklyData,
+
+        categories: categories.map((item) => ({
+          category: item.category,
+          count: Number(item.count),
+        })),
+
+        recentNotes,
+
+        pinnedNotes,
+      };
+    } catch (error) {
+      this.logger.error(
+        {
+          err: error,
+          userId,
+          message: error instanceof Error ? error.message : error,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        'Failed to fetch dashboard',
+      );
+
+      throw new InternalServerErrorException('Failed to fetch dashboard');
     }
   }
 }

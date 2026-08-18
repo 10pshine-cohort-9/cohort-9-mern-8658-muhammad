@@ -87,6 +87,9 @@ describe('ActivityService', () => {
       where: {
         user: { id: userId },
       },
+      order: {
+        createdAt: 'DESC',
+      },
     });
     expect(result).toEqual(activity);
   });

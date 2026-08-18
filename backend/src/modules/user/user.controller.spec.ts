@@ -10,6 +10,8 @@ describe('UserController', () => {
     userProfile: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    dashboard: jest.fn(),
+    userstats: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -74,5 +76,91 @@ describe('UserController', () => {
     let result = await controller.remove(req);
     expect(mockService.remove).toHaveBeenCalledWith('abcd-1234-0000-0000');
     expect(result).toEqual(message);
+  });
+  describe('dashboard', () => {
+    it('should return dashboard data for authenticated user', async () => {
+      const dashboardData = {
+        stats: {
+          totalNotes: 24,
+          favoriteNotes: 5,
+          archivedNotes: 3,
+          todayNotes: 2,
+        },
+
+        weeklyNotes: [
+          { date: 'Mon', count: 3 },
+          { date: 'Tue', count: 5 },
+          { date: 'Wed', count: 2 },
+          { date: 'Thu', count: 4 },
+          { date: 'Fri', count: 1 },
+          { date: 'Sat', count: 0 },
+          { date: 'Sun', count: 2 },
+        ],
+
+        categories: [
+          { category: 'Personal', count: 8 },
+          { category: 'Work', count: 6 },
+          { category: 'Learning', count: 5 },
+          { category: 'Ideas', count: 3 },
+          { category: 'Journal', count: 2 },
+        ],
+
+        recentNotes: [],
+
+        pinnedNotes: [],
+      };
+
+      mockService.dashboard.mockResolvedValue(dashboardData);
+
+      const req = {
+        user: {
+          id: 'user-123',
+        },
+      };
+
+      const result = await controller.dashboard(req);
+
+      expect(mockService.dashboard).toHaveBeenCalledWith('user-123');
+
+      expect(result).toEqual(dashboardData);
+    });
+
+    it('should propagate service errors', async () => {
+      mockService.dashboard.mockRejectedValue(new Error('Dashboard failed'));
+
+      const req = {
+        user: {
+          id: 'user-123',
+        },
+      };
+
+      await expect(controller.dashboard(req)).rejects.toThrow(
+        'Dashboard failed',
+      );
+
+      expect(mockService.dashboard).toHaveBeenCalledWith('user-123');
+    });
+  });
+
+  it('should return user stats', async () => {
+    const stats = {
+      counts: 24,
+      archived: 3,
+      favorite: 5,
+    };
+
+    mockService.userstats.mockResolvedValue(stats);
+
+    const req = {
+      user: {
+        id: 'user-123',
+      },
+    } as any;
+
+    const result = await controller.findUserStats(req);
+
+    expect(mockService.userstats).toHaveBeenCalledWith('user-123');
+
+    expect(result).toEqual(stats);
   });
 });

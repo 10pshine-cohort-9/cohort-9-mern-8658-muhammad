@@ -2,37 +2,68 @@
 
 import { Star } from "lucide-react";
 import Notes from "@/components/notes";
-
-const notes = [
-  {
-    id: 1,
-    title: "Welcome to NoteSphere ✨",
-    category: "Personal",
-    content:
-      "Hello there! This is your first note. Try creating a new one, favorite it, or archive it.",
-    tags: ["intro", "welcome"],
-    createdAt: "2 days ago",
-    favorite: true,
-    pinned: true,
-  },
-  {
-    id: 2,
-    title: "Reading list",
-    category: "Learning",
-    content:
-      "Designing Data-Intensive Applications Shape Up",
-    tags: ["books"],
-    createdAt: "6 days ago",
-    favorite: false,
-    pinned: false,
-  },
-];
+import { useEffect, useState } from "react";
+import { getfavoriteNote } from "./action";
+import {
+  archievedNote,
+  deleteNote,
+  favoriteNote,
+  pinnedNote,
+} from "../notes/action";
+import { toast } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
 
 function Page() {
+  const [notes, setNotes] = useState([]);
+  const router = useRouter();
+
   const favoriteNotes = notes.filter((note) => note.favorite);
 
+  useEffect(() => {
+    let getAllNotes = async () => {
+      const res = await getfavoriteNote();
+      if (!res.success) {
+        toast.add({ type: "error", description: res.message });
+      }
+      setNotes(res.notes);
+    };
+    getAllNotes();
+  }, []);
+
+  let handleToggle = async (id, action) => {
+    let res;
+    if (action === "favorite") {
+      res = await favoriteNote(id);
+    } else if (action === "pinned") {
+      res = await pinnedNote(id);
+    } else if (action === "archived") {
+      res = await archievedNote(id);
+    } else if (action === "delete") {
+      res = await deleteNote(id);
+      router.refresh();
+    } else {
+      return;
+    }
+
+    if (!res?.success) {
+      toast.add({
+        type: "error",
+        description: res?.message || "Something went wrong",
+      });
+
+      return;
+    }
+    if (action === "delete") {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
+      return;
+    }
+    setNotes((prev) =>
+      prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6 font-sans">
+    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 font-sans">
       <h1 className="text-2xl md:text-3xl  font-bold">Favorites</h1>
 
       <p className="mt-2 text-muted-foreground">
@@ -46,11 +77,11 @@ function Page() {
             <Star className="h-8 w-8 fill-white text-white" />
           </div>
 
-          <h2 className="mt-6 text-3xl font-bold">
+          <h2 className="mt-6 text-xl text-center sm:text-2xl md:text-3xl font-bold">
             No favorite notes yet
           </h2>
 
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             Star a note to see it appear here.
           </p>
         </div>
@@ -59,6 +90,7 @@ function Page() {
           {favoriteNotes.map((note) => (
             <Notes
               key={note.id}
+              id={note.id}
               title={note.title}
               category={note.category}
               content={note.content}
@@ -66,6 +98,8 @@ function Page() {
               createdAt={note.createdAt}
               favorite={note.favorite}
               pinned={note.pinned}
+              archive={note.archived}
+              onNoteAction={handleToggle}
             />
           ))}
         </div>
@@ -73,4 +107,4 @@ function Page() {
     </div>
   );
 }
-export default Page
+export default Page;

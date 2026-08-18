@@ -1,23 +1,18 @@
-"use client";
-import React, { useState } from "react";
-import Sidenavbar from "../../components/sidenavbar";
-import TopNavBar from "../../components/topnavbar";
+import { UserProvider } from "@/context/userContext";
+import { getUser } from "@/lib/api/getUser";
+import AppLayout from "@/components/appLayout";
+import { redirect } from "next/navigation";
 
-function Layout({ children }) {
-  const [sideOpen, setSideOpen] = useState(true);
+async function Layout({ children }) {
+  const user = await getUser();
+  if (!user) {
+    redirect("/auth/login");
+  }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidenavbar sideOpen={sideOpen} />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div>
-          <TopNavBar setSideOpen={setSideOpen} />
-        </div>
-
-        <main className="flex-1 overflow-y-auto ">{children}</main>
-      </div>
-    </div>
+    <UserProvider initialUser={user}>
+      <AppLayout>{children}</AppLayout>
+    </UserProvider>
   );
 }
 

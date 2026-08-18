@@ -1,5 +1,4 @@
-"use client";
-
+"use server";
 import {
   Archive,
   ArchiveRestore,
@@ -14,116 +13,62 @@ import {
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
-
-const activities = [
-  {
-    id: 1,
-    action: "delete",
-    note: "Reading list",
-    time: "4 minutes ago",
-  },
-  {
-    id: 2,
-    action: "delete",
-    note: "Product roadmap Q3",
-    time: "2 days ago",
-  },
-  {
-    id: 3,
-    action: "favorite",
-    note: "Welcome to NoteSphere ✨",
-    time: "2 days ago",
-  },
-  {
-    id: 4,
-    action: "favorite",
-    note: "Reading list",
-    time: "6 days ago",
-  },
-  {
-    id: 5,
-    action: "create",
-    note: "Welcome to NoteSphere ✨",
-    time: "3 days ago",
-  },
-  {
-    id: 6,
-    action: "archive",
-    note: "Design System",
-    time: "1 week ago",
-  },
-  {
-    id: 7,
-    action: "update",
-    note: "Meeting Notes",
-    time: "1 week ago",
-  },
-];
+import { AxiosReq } from "@/lib/api/server-api";
 
 const activityConfig = {
-  create: {
+  NOTE_CREATED: {
     icon: Plus,
-    title: "Create",
+    title: "Created",
     color: "text-emerald-500",
-    
   },
 
-  favorite: {
-    icon: Star,
-    title: "Favorite",
-    color: "text-amber-500",
-   
-  },
-
-  archive: {
-    icon: Archive,
-    title: "Archive",
-    color: "text-slate-500",
-    
-  },
-
-  delete: {
-    icon: Trash2,
-    title: "Delete",
-    color: "text-red-500",
-   
-  },
-
-  update: {
+  NOTE_UPDATED: {
     icon: Pencil,
-    title: "Update",
+    title: "Updated",
     color: "text-sky-500",
-   
   },
-  
-pin: {
-  icon: Pin,
-  title: "Pinned",
-  color: "text-violet-500",
- 
-},
 
-unpin: {
-  icon: PinOff,
-  title: "Unpinned",
-  color: "text-gray-500",
- 
-},
+  NOTE_DELETED: {
+    icon: Trash2,
+    title: "Deleted",
+    color: "text-red-500",
+  },
 
-unfavorite: {
-  icon: StarOff,
-  title: "Removed Favorite",
-  color: "text-gray-500",
-  
-},
+  NOTE_PINNED: {
+    icon: Pin,
+    title: "Pinned",
+    color: "text-violet-500",
+  },
 
-unarchive: {
-  icon: ArchiveRestore,
-  title: "Restored",
-  color: "text-emerald-500",
-  
-},
+  NOTE_UNPINNED: {
+    icon: PinOff,
+    title: "Unpinned",
+    color: "text-gray-500",
+  },
 
+  NOTE_FAVORITED: {
+    icon: Star,
+    title: "Favorited",
+    color: "text-amber-500",
+  },
+
+  NOTE_UNFAVORITED: {
+    icon: StarOff,
+    title: "Removed Favorite",
+    color: "text-gray-500",
+  },
+
+  NOTE_ARCHIVED: {
+    icon: Archive,
+    title: "Archived",
+    color: "text-slate-500",
+  },
+
+  NOTE_UNARCHIVED: {
+    icon: ArchiveRestore,
+    title: "Restored",
+    color: "text-emerald-500",
+  },
 };
 
 const defaultActivityConfig = {
@@ -132,9 +77,13 @@ const defaultActivityConfig = {
   color: "text-muted-foreground",
 };
 
-function page() {
+async function page() {
+  let api = await AxiosReq();
+  let res = await api.get("/activity");
+  let activities = await res.data;
+
   return (
-    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
+    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 ">
       <h1 className="text-2xl md:text-3xl font-bold">Activity</h1>
 
       <p className="mt-2 text-muted-foreground">
@@ -144,7 +93,7 @@ function page() {
       <Card className="mt-8 overflow-hidden rounded-3xl gap-0 p-0 dark:bg-[#101321]">
         {activities.map((activity, index) => {
           const config =
-    activityConfig[activity.action] ?? defaultActivityConfig;
+            activityConfig[activity.action] ?? defaultActivityConfig;
 
           const Icon = config.icon;
 
@@ -152,9 +101,7 @@ function page() {
             <div
               key={activity.id}
               className={`flex items-center gap-5 p-4 ${
-                index !== activities.length - 1
-                  ? "border-b "
-                  : ""
+                index !== activities.length - 1 ? "border-b " : ""
               }`}
             >
               <div
@@ -165,18 +112,10 @@ function page() {
 
               <div>
                 <p className="text-sm">
-                  <span className="font-semibold">
-                    {config.title}
-                  </span>
-
-                  <span className="text-muted-foreground">
-                    — {activity.note}
-                  </span>
+                  <span className="">{activity.message}</span>
                 </p>
 
-                <p className="text-xs text-muted-foreground">
-                  {activity.time}
-                </p>
+                <p className="text-xs text-muted-foreground">{activity.time}</p>
               </div>
             </div>
           );
@@ -185,4 +124,4 @@ function page() {
     </div>
   );
 }
-export default page
+export default page;

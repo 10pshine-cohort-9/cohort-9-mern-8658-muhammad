@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { File, Plus } from "lucide-react";
+import Link from "next/link";
 
 function EmptyNoteAction() {
   return (
@@ -9,19 +10,23 @@ function EmptyNoteAction() {
         <File className="h-8 w-8 text-white" />
       </div>
 
-      <h2 className="mt-6 text-3xl font-bold">No notes here yet</h2>
+      <h2 className="mt-6 text-xl sm:text-2xl md:text-3xl font-bold">
+        No notes here yet
+      </h2>
 
-      <p className="mt-2 text-muted-foreground">
+      <p className="mt-2 text-sm text-center text-muted-foreground">
         Create your first note and it will appear right here.
       </p>
 
-      <Button
-        onClick={() => {}}
-        className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500"
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Create note
-      </Button>
+      <Link href={"/app/notes/new"}>
+        <Button
+          onClick={() => {}}
+          className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-sky-500"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Create note
+        </Button>
+      </Link>
     </div>
   );
 }

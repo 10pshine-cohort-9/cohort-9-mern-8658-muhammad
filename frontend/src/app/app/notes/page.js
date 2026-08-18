@@ -1,56 +1,79 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { File, Grid2X2, List, Plus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Grid2X2, List, Plus } from "lucide-react";
 
 import Notes from "@/components/notes";
 import { Button } from "@/components/ui/button";
 import EmptyNoteAction from "@/components/EmptyNoteAction";
-
-const notes = [
-  {
-    id: 1,
-    title: "Welcome to NoteSphere ✨",
-    category: "Personal",
-    content:
-  "Hello there! This is your first note. Try creating a new one, favorite it, or archive it to explore NoteSphere's features.",
-      tags: ["intro", "welcome"],
-    createdAt: "2 days ago",
-    favorite: false,
-    pinned: true,
-  },
-  {
-    id: 2,
-    title: "Reading List",
-    category: "Learning",
-    content:
-      "Designing Data-Intensive Applications Shape Up. Read chapters 4-7 this week.",
-    tags: ["books"],
-    createdAt: "6 days ago",
-    favorite: true,
-    pinned: false,
-  },
-];
+import {
+  archievedNote,
+  deleteNote,
+  favoriteNote,
+  getNotes,
+  pinnedNote,
+} from "./action";
+import { toast } from "@/components/ui/toast";
+import Link from "next/link";
 
 const categories = ["All", "Personal", "Work", "Ideas", "Learning", "Journal"];
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [notes, setNotes] = useState([]);
   const [gridView, setGridView] = useState(true);
+
+  useEffect(() => {
+    let getAllNotes = async () => {
+      const res = await getNotes();
+      if (!res.success) {
+        toast.add({ type: "error", description: res.message });
+      }
+      setNotes(res.notes);
+    };
+    getAllNotes();
+  }, []);
 
   const filteredNotes = useMemo(() => {
     if (selectedCategory === "All") return notes;
 
     return notes.filter((note) => note.category === selectedCategory);
-  }, [selectedCategory]);
+  }, [selectedCategory, notes]);
 
-  let handlenewNote=()=>{
-    // implement later
-  }
+  let handleToggle = async (id, action) => {
+    let res;
+    if (action === "favorite") {
+      res = await favoriteNote(id);
+    } else if (action === "pinned") {
+      res = await pinnedNote(id);
+    } else if (action === "archived") {
+      res = await archievedNote(id);
+    } else if (action === "delete") {
+      res = await deleteNote(id);
+    } else {
+      return;
+    }
+    if (!res?.success) {
+      toast.add({
+        type: "error",
+        description: res?.message || "Something went wrong",
+      });
+
+      return;
+    }
+    if (action === "delete") {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
+      return;
+    }
+
+    setNotes((prev) =>
+      prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFE] p-6 dark:bg-[#070811]">
-      <div className="flex items-start justify-between">
+    <div className="min-h-screen bg-[#F9FAFE] px-3 sm:px-6 py-6 dark:bg-[#070811]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">My Notes</h1>
 
@@ -60,41 +83,47 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex overflow-hidden rounded-xl border bg-white dark:bg-[#0D0F1D]">
             <button
-             type="button"
+              type="button"
               aria-label="Grid view"
               aria-pressed={gridView}
               onClick={() => setGridView(true)}
               className={`border-r p-3 transition ${
-                gridView ? "bg-violet-100 text-violet-600" : "hover:bg-muted"
+                gridView
+                  ? "bg-violet-100 text-violet-600 dark:bg-gray-700"
+                  : "hover:bg-muted"
               }`}
             >
               <Grid2X2 className="h-4 w-4" />
             </button>
 
             <button
-             type="button"
-             aria-label="List view"
-             aria-pressed={!gridView}
+              type="button"
+              aria-label="List view"
+              aria-pressed={!gridView}
               onClick={() => setGridView(false)}
               className={`p-3 transition ${
-                !gridView ? "bg-violet-100 text-violet-600" : "hover:bg-muted"
+                !gridView
+                  ? "bg-violet-100 text-violet-600 dark:bg-gray-700"
+                  : "hover:bg-muted"
               }`}
             >
               <List className="h-4 w-4" />
             </button>
           </div>
 
-          <Button onClick={()=>(handlenewNote)} className="rounded-xl bg-gradient-to-r from-violet-500 to-sky-500 px-5 py-6 text-white">
-            <Plus className="mr-2 h-4 w-4" />
-            New note
-          </Button>
+          <Link href={"/app/notes/new"}>
+            <Button className="rounded-xl bg-gradient-to-r from-violet-500 to-sky-500 px-1 sm:px-4 py-6 text-white">
+              <Plus className="sm:mr-2 h-4 w-4" />
+              New note
+            </Button>
+          </Link>
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-3">
+      <div className="mt-8 flex  gap-3 overflow-scroll">
         {categories.map((category) => (
           <button
             key={category}
@@ -121,13 +150,16 @@ export default function Page() {
           {filteredNotes.map((note) => (
             <Notes
               key={note.id}
+              id={note.id}
               title={note.title}
               category={note.category}
               content={note.content}
               createdAt={note.createdAt}
               pinned={note.pinned}
               favorite={note.favorite}
+              archive={note.archived}
               tags={note.tags}
+              onNoteAction={handleToggle}
             />
           ))}
         </div>
