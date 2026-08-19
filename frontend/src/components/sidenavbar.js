@@ -14,7 +14,7 @@ import {
   FileText,
   Menu,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useUser } from "@/context/userContext";
@@ -23,6 +23,7 @@ import { toast } from "./ui/toast";
 
 function Sidenavbar({ sideOpen, setSideOpen }) {
   const path = usePathname();
+  const router = useRouter();
 
   let sidebarItems = [
     {
@@ -98,6 +99,7 @@ function Sidenavbar({ sideOpen, setSideOpen }) {
         description: "Thank for using our platform",
       });
       logout();
+      router.replace("/auth/login");
     } else {
       toast.add({
         type: "error",

@@ -6,7 +6,6 @@ export async function DashboardData() {
   try {
     const api = await AxiosReq();
     const res = await api.get("/user/dashboard");
-    console.log(res);
     return { success: true, data: res.data };
   } catch (error) {
     return {

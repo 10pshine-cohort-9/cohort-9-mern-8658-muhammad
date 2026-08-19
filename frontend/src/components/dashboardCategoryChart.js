@@ -20,24 +20,33 @@ const CATEGORY_COLORS = {
 
 const DEFAULT_CATEGORIES = ["Personal", "Work", "Ideas", "Learning", "Journal"];
 
-export default function CategoriesCard({ data = [] }) {
-  const chartData = DEFAULT_CATEGORIES.map((category) => {
-    const found = data.find(
-      (item) => item.category.toLowerCase() === category.toLowerCase(),
-    );
+const FALLBACK_COLOR = "#6B7280";
 
-    return {
-      name: category,
-      value: found ? Number(found.count) : 0,
-      color: CATEGORY_COLORS[category],
-    };
-  });
+export default function CategoriesCard({ data = [] }) {
+  const counts = new Map();
+
+  for (const item of data) {
+    const key = (item?.category ?? "Other").toLowerCase();
+    const count = Number(item?.count) || 0;
+
+    counts.set(key, (counts.get(key) ?? 0) + count);
+  }
+
+  const extras = [...counts.keys()].filter(
+    (key) =>
+      !DEFAULT_CATEGORIES.some((category) => category.toLowerCase() === key),
+  );
+
+  const chartData = [...DEFAULT_CATEGORIES, ...extras].map((category) => ({
+    name: category,
+    value: counts.get(category.toLowerCase()) ?? 0,
+    color: CATEGORY_COLORS[category] ?? FALLBACK_COLOR,
+  }));
 
   return (
-    <Card className="rounded-3xl shadow bg-[#FCFDFF] dark:bg-[#0D0F1D] ">
+    <Card className="rounded-3xl shadow bg-[#FCFDFF] dark:bg-[#0D0F1D]">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Categories</CardTitle>
-
         <CardDescription>Distribution of your notes</CardDescription>
       </CardHeader>
 
@@ -79,7 +88,7 @@ export default function CategoriesCard({ data = [] }) {
             {chartData.map((item) => (
               <div
                 key={item.name}
-                className="flex items-center gap-2 justify-between "
+                className="flex items-center gap-2 justify-between"
               >
                 <div className="flex items-center gap-2">
                   <div

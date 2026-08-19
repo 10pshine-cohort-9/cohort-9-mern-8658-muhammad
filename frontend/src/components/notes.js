@@ -65,10 +65,23 @@ function Notes({
     setDeleteOpen(false);
   };
 
+  const handleCardKeyDown = (e) => {
+    if (e.target !== e.currentTarget) return;
+
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleOpenNote();
+    }
+  };
+
   return (
     <>
       <Card
+        role="link"
+        tabIndex={0}
         onClick={handleOpenNote}
+        aria-label={`Open note: ${title}`}
+        onKeyDown={handleCardKeyDown}
         className="font-sans h-64 m-2 shadow-xs transition-all duration-300
         hover:shadow-[0_10px_35px_rgba(139,92,246,0.4)]
         hover:ring-violet-300 group

@@ -78,7 +78,6 @@ export default function NoteDetailsPage() {
         setLoading(true);
 
         const res = await getNotebyId(id);
-        console.log(res);
 
         if (!mounted) return;
 
@@ -94,8 +93,6 @@ export default function NoteDetailsPage() {
 
         setNote(res.notes);
       } catch (error) {
-        console.error("Load note error:", error);
-
         if (mounted) {
           toast.add({
             type: "error",
@@ -174,8 +171,6 @@ export default function NoteDetailsPage() {
                 : "Note archived",
       });
     } catch (error) {
-      console.error("Note action error:", error);
-
       toast.add({
         type: "error",
         description: "Something went wrong",
@@ -209,8 +204,6 @@ export default function NoteDetailsPage() {
 
       router.push("/app/notes");
     } catch (error) {
-      console.error("Delete note error:", error);
-
       toast.add({
         type: "error",
         description: "Unable to delete note",
@@ -285,7 +278,7 @@ export default function NoteDetailsPage() {
   return (
     <div className="min-h-screen bg-[#F9FAFE] p-4 dark:bg-[#070811] sm:p-6">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col lg:flex-row lg:justify-between items-end gap-5">
+        <div className="flex flex-col lg:flex-row lg:justify-between  gap-5">
           <div className="min-w-0">
             <h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
               {note.title || "Untitled note"}

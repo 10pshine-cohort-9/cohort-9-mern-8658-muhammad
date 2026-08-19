@@ -8,19 +8,22 @@ export let Userlogout = async () => {
   let cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
   try {
-    if (accessToken) {
-      const res = await api.post("/auth/signout");
-      console.log(res);
-      if (res.status === 201) {
-        cookiesStore.delete("access_token");
-        cookiesStore.delete("refresh_token");
-        return {
-          success: true,
-        };
-      } else {
-        return { success: false };
-      }
+    if (!accessToken) {
+      return {
+        success: false,
+      };
     }
+    const res = await api.post("/auth/signout");
+    if (res.status !== 201) {
+      return {
+        success: false,
+      };
+    }
+    cookiesStore.delete("access_token");
+    cookiesStore.delete("refresh_token");
+    return {
+      success: true,
+    };
   } catch (error) {
     return { success: false };
   }

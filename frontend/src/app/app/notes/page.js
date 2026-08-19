@@ -24,13 +24,32 @@ export default function Page() {
   const [gridView, setGridView] = useState(true);
 
   useEffect(() => {
-    let getAllNotes = async () => {
-      const res = await getNotes();
-      if (!res.success) {
-        toast.add({ type: "error", description: res.message });
+    const getAllNotes = async () => {
+      try {
+        const res = await getNotes();
+
+        if (!res?.success) {
+          toast.add({
+            type: "error",
+            description: res?.message || "Unable to load notes",
+          });
+          setNotes([]);
+          return;
+        }
+
+        setNotes(res.notes || []);
+      } catch (error) {
+        console.error("Get notes error:", error);
+
+        setNotes([]);
+
+        toast.add({
+          type: "error",
+          description: "Unable to load notes",
+        });
       }
-      setNotes(res.notes);
     };
+
     getAllNotes();
   }, []);
 
@@ -40,35 +59,47 @@ export default function Page() {
     return notes.filter((note) => note.category === selectedCategory);
   }, [selectedCategory, notes]);
 
-  let handleToggle = async (id, action) => {
-    let res;
-    if (action === "favorite") {
-      res = await favoriteNote(id);
-    } else if (action === "pinned") {
-      res = await pinnedNote(id);
-    } else if (action === "archived") {
-      res = await archievedNote(id);
-    } else if (action === "delete") {
-      res = await deleteNote(id);
-    } else {
-      return;
-    }
-    if (!res?.success) {
+  const handleToggle = async (id, action) => {
+    try {
+      let res;
+
+      if (action === "favorite") {
+        res = await favoriteNote(id);
+      } else if (action === "pinned") {
+        res = await pinnedNote(id);
+      } else if (action === "archived") {
+        res = await archievedNote(id);
+      } else if (action === "delete") {
+        res = await deleteNote(id);
+      } else {
+        return;
+      }
+
+      if (!res?.success) {
+        toast.add({
+          type: "error",
+          description: res?.message || "Something went wrong",
+        });
+
+        return;
+      }
+
+      if (action === "delete") {
+        setNotes((prev) => prev.filter((note) => note.id !== id));
+        return;
+      }
+
+      setNotes((prev) =>
+        prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
+      );
+    } catch (error) {
+      console.error("Note action error:", error);
+
       toast.add({
         type: "error",
-        description: res?.message || "Something went wrong",
+        description: "Unable to update note",
       });
-
-      return;
     }
-    if (action === "delete") {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
-      return;
-    }
-
-    setNotes((prev) =>
-      prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
-    );
   };
 
   return (
@@ -123,7 +154,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="mt-8 flex  gap-3 overflow-scroll">
+      <div className="mt-8 flex  gap-3 overflow-x-auto">
         {categories.map((category) => (
           <button
             key={category}

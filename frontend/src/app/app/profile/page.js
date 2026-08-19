@@ -12,8 +12,8 @@ import { toast } from "@/components/ui/toast";
 
 function page() {
   const { user } = useUser();
-  const [userData, setuser] = useState(user);
-  const [name, setname] = useState(user.name);
+  const [userData, setuser] = useState(user ?? null);
+  const [name, setname] = useState(user?.name ?? "");
   const [userStats, setUserstats] = useState({
     counts: 0,
     archived: 0,
@@ -37,6 +37,18 @@ function page() {
   };
 
   useEffect(() => {
+    if (!user) {
+      setuser(null);
+      setname("");
+      return;
+    }
+
+    setuser(user);
+    setname(user.name ?? "");
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
     let getStats = async () => {
       const res = await getUserStats();
       if (!res.success) {

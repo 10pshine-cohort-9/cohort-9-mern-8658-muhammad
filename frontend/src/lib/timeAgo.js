@@ -16,7 +16,7 @@ export function timeAgo(date) {
 
   const diffInHours = Math.floor(diffInMinutes / 60);
 
-  if (diffInHours < 12) {
+  if (diffInHours < 24) {
     return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
   }
 

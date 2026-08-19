@@ -3,8 +3,8 @@
 import { AxiosReq } from "@/lib/api/server-api";
 
 async function addNote(note) {
-  const api = await AxiosReq();
   try {
+    const api = await AxiosReq();
     const isEmpty =
       !note.content || note.content.replace(/<[^>]*>/g, "").trim() === "";
 
@@ -14,8 +14,7 @@ async function addNote(note) {
         message: "Note content is empty",
       };
     }
-    const res = await api.post("/note", note);
-    console.log(res);
+    await api.post("/note", note);
 
     return { success: true, message: "Notes Created" };
   } catch (error) {

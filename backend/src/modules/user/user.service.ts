@@ -447,6 +447,10 @@ export class UserService {
         pinnedNotes,
       };
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
       this.logger.error(
         {
           err: error,

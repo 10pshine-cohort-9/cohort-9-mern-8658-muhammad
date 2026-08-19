@@ -27,6 +27,7 @@ export function UserDropdown() {
         description: "Thank for using our platform",
       });
       logout();
+      router.replace("/auth/login");
     } else {
       toast.add({
         type: "error",

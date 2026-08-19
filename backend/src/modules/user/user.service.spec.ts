@@ -731,9 +731,6 @@ describe('UserService', () => {
         },
       ]);
 
-      /*
-       * Categories
-       */
       categoryQueryBuilder.getRawMany.mockResolvedValue([
         {
           category: 'Personal',
@@ -870,7 +867,7 @@ describe('UserService', () => {
       mockNoteRepo.count.mockRejectedValueOnce(new Error('Database error'));
 
       await expect(service.dashboard('user-123')).rejects.toThrow(
-        InternalServerErrorException,
+        NotFoundException,
       );
 
       expect(mockRepo.findOne).toHaveBeenCalledWith({
@@ -884,7 +881,7 @@ describe('UserService', () => {
       mockRepo.findOne.mockResolvedValue(null);
 
       await expect(service.dashboard('user-123')).rejects.toThrow(
-        InternalServerErrorException,
+        NotFoundException,
       );
 
       expect(mockNoteRepo.count).not.toHaveBeenCalled();

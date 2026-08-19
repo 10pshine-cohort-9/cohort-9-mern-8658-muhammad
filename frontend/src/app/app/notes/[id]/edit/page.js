@@ -14,7 +14,15 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import { Archive, Code2Icon, Eye, Pin, Save, Star } from "lucide-react";
+import {
+  Archive,
+  ArrowLeft,
+  Code2Icon,
+  Eye,
+  Pin,
+  Save,
+  Star,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { useParams, useRouter } from "next/navigation";
@@ -63,6 +71,7 @@ function page() {
   const params = useParams();
   const id = params.id;
   let [preview, setPreview] = useState(false);
+  const [error, setError] = useState("");
   let [note, setNote] = useState({
     title: "Untitled note",
     content: "",
@@ -131,19 +140,52 @@ function page() {
             type: "error",
             description: res?.message || "Unable to load note",
           });
+          setError(message);
 
-          setNote(null);
           return;
         }
-
+        setError("");
         setNote(res.notes);
       } catch (error) {
-        console.error("Load note error:", error);
+        const message = "Unable to load note";
+
+        setError(message);
       }
     }
 
     loadNote();
   }, [id]);
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#F9FAFE] p-6 dark:bg-[#070811]">
+        <div className="mx-auto max-w-7xl">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="rounded-xl"
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+
+          <div className="mt-16 text-center">
+            <h1 className="text-2xl font-bold">Note not found</h1>
+
+            <p className="mt-2 text-muted-foreground">
+              This note may have been deleted or does not exist.
+            </p>
+
+            <Button
+              onClick={() => router.push("/notes")}
+              className="mt-5 rounded-xl"
+            >
+              Go to notes
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
@@ -156,7 +198,7 @@ function page() {
               All the changes are saved automatically
             </p>
           </div>
-          <div className="flex  items-center gap-3 ">
+          <div className="flex flex-wrap items-center gap-3 ">
             <Button
               type="button"
               variant="outline"
@@ -205,8 +247,8 @@ function page() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px] ">
-          <div className="mt-8">
+        <div className=" grid grid-cols-1 gap-6 md:grid-cols-10">
+          <div className="mt-8 md:col-span-7">
             {!preview ? (
               <>
                 <input
@@ -292,7 +334,7 @@ function page() {
             )}
           </div>
 
-          <div className=" mt-4 lg:mt-8">
+          <div className=" mt-4 lg:mt-8 md:col-span-3">
             <Card className={"my-3 dark:bg-[#101321]"}>
               <CardHeader>
                 <CardTitle>Options</CardTitle>
@@ -377,12 +419,12 @@ function page() {
               </CardHeader>
 
               <CardContent>
-                <div className="flex items-center gap-2">
+                <div className="flex items-start md:items-center flex-col md:flex-row  gap-2">
                   <input
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     placeholder="Add tag..."
-                    className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-violet-500/50 dark:bg-[#070811]"
+                    className="h-10 rounded-lg border border-border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-violet-500/50 dark:bg-[#070811]"
                   />
 
                   <Button

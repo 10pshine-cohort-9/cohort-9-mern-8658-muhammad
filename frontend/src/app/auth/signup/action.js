@@ -27,8 +27,8 @@ export async function register(formdata) {
     };
   } catch (error) {
     return {
-      success: "false",
-      message: error.response?.data.message || "Failed to Register",
+      success: false,
+      message: error.response?.data?.message || "Failed to Register",
     };
   }
 }

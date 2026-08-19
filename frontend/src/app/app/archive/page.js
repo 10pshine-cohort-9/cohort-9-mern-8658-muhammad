@@ -5,7 +5,12 @@ import { Archive } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 import Notes from "@/components/notes";
-import { archievedNote, deleteNote } from "../notes/action";
+import {
+  archievedNote,
+  deleteNote,
+  favoriteNote,
+  pinnedNote,
+} from "../notes/action";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { getArchivedNote } from "./action";
@@ -37,7 +42,6 @@ function page() {
       res = await archievedNote(id);
     } else if (action === "delete") {
       res = await deleteNote(id);
-      router.refresh();
     } else {
       return;
     }
@@ -50,8 +54,7 @@ function page() {
       return;
     }
     if (action === "delete") {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
-      return;
+      router.refresh();
     }
     setNotes((prev) =>
       prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
@@ -98,6 +101,7 @@ function page() {
               content={note.content}
               tags={note.tags}
               createdAt={note.createdAt}
+              archive={note.archived}
               favorite={note.favorite}
               pinned={note.pinned}
               onNoteAction={handleToggle}

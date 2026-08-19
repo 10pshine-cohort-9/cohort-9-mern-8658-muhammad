@@ -60,7 +60,18 @@ function Page() {
           return;
         }
 
-        setData(res.data);
+        setData((prev) => ({
+          ...prev,
+          ...res.data,
+          stats: {
+            ...prev.stats,
+            ...(res.data?.stats ?? {}),
+          },
+          weeklyNotes: res.data?.weeklyNotes ?? [],
+          categories: res.data?.categories ?? [],
+          recentNotes: res.data?.recentNotes ?? [],
+          pinnedNotes: res.data?.pinnedNotes ?? [],
+        }));
       } catch (error) {
         console.error("Dashboard error:", error);
 
@@ -92,7 +103,10 @@ function Page() {
       }
 
       if (!res?.success) {
-        toast.error(res?.message || "Something went wrong");
+        toast.add({
+          type: "error",
+          description: res?.message || "Something went wrong",
+        });
         return;
       }
 
@@ -140,7 +154,10 @@ function Page() {
     } catch (error) {
       console.error("Note action error:", error);
 
-      toast.error(error?.message || "Something went wrong");
+      toast.add({
+        type: "error",
+        description: error?.message || "Something went wrong",
+      });
     }
   };
 

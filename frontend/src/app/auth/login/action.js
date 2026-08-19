@@ -2,23 +2,33 @@
 
 import { axiosClient } from "@/lib/api/axios";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function login(formdata) {
+  const email = formdata.get("email");
+  const password = formdata.get("password");
+
+  if (!email || !password) {
+    return {
+      success: false,
+      message: "Enter valid email or password",
+    };
+  }
+
   try {
-    const email = formdata.get("email");
-    const password = formdata.get("password");
-    if (!email || !password) {
-      return {
-        success: false,
-        message: "Enter valid email or password",
-      };
-    }
     const response = await axiosClient.post("/auth/signin", {
       email,
       password,
     });
-    const { accessToken, refreshToken } = response.data;
+
+    const { accessToken, refreshToken } = response.data || {};
+
+    if (!accessToken || !refreshToken) {
+      return {
+        success: false,
+        message: "Login response is missing tokens",
+      };
+    }
+
     const cookieStore = await cookies();
 
     cookieStore.set("access_token", accessToken, {
@@ -39,7 +49,7 @@ export async function login(formdata) {
 
     return {
       success: true,
-      message: "Login successfull",
+      message: "Login successful",
     };
   } catch (error) {
     return {

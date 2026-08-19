@@ -3,8 +3,8 @@ import { AxiosReq } from "@/lib/api/server-api";
 import { revalidatePath } from "next/cache";
 
 export async function getNotes() {
-  let api = await AxiosReq();
   try {
+    let api = await AxiosReq();
     const res = await api.get("/note");
 
     return { success: true, notes: res.data };
@@ -18,9 +18,8 @@ export async function getNotes() {
 }
 
 export async function favoriteNote(id) {
-  let api = await AxiosReq();
-
   try {
+    let api = await AxiosReq();
     const res = await api.patch(`/note/${id}/favorite`);
 
     return { success: true, notes: res.data.note };
@@ -33,9 +32,8 @@ export async function favoriteNote(id) {
 }
 
 export async function pinnedNote(id) {
-  let api = await AxiosReq();
-
   try {
+    let api = await AxiosReq();
     const res = await api.patch(`/note/${id}/pinned`);
 
     return { success: true, notes: res.data.note };
@@ -48,9 +46,8 @@ export async function pinnedNote(id) {
 }
 
 export async function archievedNote(id) {
-  let api = await AxiosReq();
-
   try {
+    let api = await AxiosReq();
     const res = await api.patch(`/note/${id}/archived`);
 
     return { success: true, notes: res.data.note };
@@ -63,9 +60,8 @@ export async function archievedNote(id) {
 }
 
 export async function deleteNote(id) {
-  const api = await AxiosReq();
-
   try {
+    const api = await AxiosReq();
     const res = await api.delete(`/note/${id}`);
     return {
       success: true,

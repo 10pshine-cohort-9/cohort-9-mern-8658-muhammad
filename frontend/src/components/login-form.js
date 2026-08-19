@@ -40,7 +40,8 @@ export function LoginForm({ className, ...props }) {
         type: "success",
         description: "Login successfully",
       });
-      router.push("/app");
+      router.replace("/app");
+      router.refresh();
     }
   };
 

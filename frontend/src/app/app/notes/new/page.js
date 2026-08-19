@@ -311,12 +311,12 @@ function page() {
               </CardHeader>
 
               <CardContent>
-                <div className="flex items-center gap-2">
+                <div className="flex items-start md:items-center flex-col md:flex-row  gap-2">
                   <input
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     placeholder="Add tag..."
-                    className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-violet-500/50 dark:bg-[#070811]"
+                    className="h-10  rounded-lg border border-border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-violet-500/50 dark:bg-[#070811]"
                   />
 
                   <Button

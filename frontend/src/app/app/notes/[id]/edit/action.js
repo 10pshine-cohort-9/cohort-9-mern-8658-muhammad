@@ -25,7 +25,6 @@ export async function updateNote(id, note) {
       favorite: note.favorite,
       tags: note.tags,
     });
-    console.log(res);
     return {
       success: true,
       notes: res.data,

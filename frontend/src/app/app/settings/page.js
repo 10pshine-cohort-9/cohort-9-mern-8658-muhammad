@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 function page() {
+  const [isDeleting, setIsDeleting] = useState(false);
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
@@ -39,14 +40,35 @@ function page() {
 
   if (!mounted) return null;
 
-  let handleDeleteAccount = async () => {
-    let res = await DeleteAccount();
-    if (!res.success) {
-      toast.add({ type: "error", description: "Failed to delete account" });
-      return;
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+
+    try {
+      const res = await DeleteAccount();
+
+      if (!res?.success) {
+        toast.add({
+          type: "error",
+          description: "Failed to delete account",
+        });
+        return;
+      }
+
+      toast.add({
+        type: "success",
+        description: "Account Deleted",
+      });
+
+      router.replace("/auth/login");
+      router.refresh();
+    } catch (error) {
+      toast.add({
+        type: "error",
+        description: "Failed to delete account",
+      });
+    } finally {
+      setIsDeleting(false);
     }
-    toast.add({ type: "success", description: "Account Deleted" });
-    router.push("/auth/login");
   };
 
   return (
@@ -207,10 +229,11 @@ function page() {
               <AlertDialogFooter>
                 <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                 <AlertDialogAction
+                  disabled={isDeleting}
                   onClick={handleDeleteAccount}
                   variant="destructive"
                 >
-                  Delete
+                  {isDeleting ? "Deleting..." : "Delete"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
