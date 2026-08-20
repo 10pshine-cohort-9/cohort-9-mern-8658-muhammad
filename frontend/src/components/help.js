@@ -1,11 +1,6 @@
-"use client"
+"use client";
 
-import {
-  BookOpen,
-  MessageCircle,
-  Mail,
-  Zap,
-} from "lucide-react";
+import { BookOpen, MessageCircle, Mail, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -14,10 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import Link from "next/link";
 
@@ -43,7 +35,7 @@ const faqs = [
   {
     question: "How is my data stored?",
     answer:
-    "Your notes are securely stored in the cloud and synced across your devices when you're signed in. Data is transmitted over encrypted connections, so you can access your notes anywhere with your account.",
+      "Your notes are stored in your NoteSphere account and can be accessed when you sign in. Data synchronization depends on your configured account and storage setup.",
   },
   {
     question: "Can I import from another app?",
@@ -62,12 +54,9 @@ const faqs = [
   },
 ];
 
-
 function HelpPage() {
   return (
-        <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
-
-
+    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Help Center</h1>
 
@@ -75,7 +64,6 @@ function HelpPage() {
           Answers, guides, and support
         </p>
       </div>
-
 
       <div className="mt-8 grid gap-5 md:grid-cols-3">
         {cards.map((item) => {
@@ -87,34 +75,22 @@ function HelpPage() {
               className="rounded-3xl bg-[#FCFDFF] dark:bg-[#0D0F1D] shadow"
             >
               <CardContent className="px-5 py-2">
-
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-500 to-sky-500">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
 
-                <h3 className="mt-3 text-lg font-bold">
-                  {item.title}
-                </h3>
+                <h3 className="mt-3 text-lg font-bold">{item.title}</h3>
 
-                <p className="mt-1 text-muted-foreground">
-                  {item.description}
-                </p>
-
+                <p className="mt-1 text-muted-foreground">{item.description}</p>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-
       <Card className="mt-8 rounded-3xl bg-[#FCFDFF] dark:bg-[#0D0F1D] shadow">
         <CardContent className="p-0">
-
-          <Accordion
-            type="single"
-            collapsible={true}
-            defaultValue="item-0"
-          >
+          <Accordion type="single" collapsible={true} defaultValue="item-0">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={faq.question}
@@ -131,35 +107,47 @@ function HelpPage() {
               </AccordionItem>
             ))}
           </Accordion>
-
         </CardContent>
       </Card>
 
-
-      <div className="mt-8 flex items-center justify-between rounded-3xl bg-gradient-to-r from-violet-500 to-sky-500 p-6 text-white">
-
+      <div
+        className="
+    mt-8
+    flex flex-col gap-5
+    rounded-3xl
+    bg-gradient-to-r from-violet-500 to-sky-500
+    p-5 sm:p-6
+    text-white
+    sm:flex-row sm:items-center sm:justify-between
+  "
+      >
         <div>
-          <h2 className="text-lg font-bold">
-            Still need help?
-          </h2>
+          <h2 className="text-lg font-bold">Still need help?</h2>
 
           <p className="mt-1 text-sm text-white/90">
             Our team responds within 24 hours.
           </p>
         </div>
 
-        <Link 
-        href={"mailto:mohsinnaveed196@gmail.com"} 
-          className="rounded-full bg-white/15 px-6 py-2 flex items-center justify-center  text-white backdrop-blur hover:bg-white/25"
+        <Link
+          href="mailto:mohsinnaveed196@gmail.com"
+          className="
+      flex w-full items-center justify-center
+      rounded-full
+      bg-white/15
+      px-6 py-2.5
+      text-white
+      backdrop-blur
+      hover:bg-white/25
+      sm:w-auto
+    "
         >
-          <Mail className="mr-2 h-4 w-4" />
+          <Mail className="mr-2 h-4 w-4 shrink-0" />
           Contact support
         </Link>
-
       </div>
     </div>
-
-  )
+  );
 }
 
-export default HelpPage
+export default HelpPage;

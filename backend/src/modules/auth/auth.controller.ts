@@ -1,4 +1,4 @@
-import { Controller,  Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
@@ -36,33 +36,29 @@ export class AuthController {
   //   return this.authService.remove(+id);
   // }
 
-@Public()
-@UseGuards(LocalAuthGuard)
-@Post("signin")
- signin(@Req() req:AuthRequest){
-  return this.authService.signin(req.user.id)
-}
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Post('signin')
+  signin(@Req() req: AuthRequest) {
+    return this.authService.signin(req.user.id);
+  }
 
-@Public()
-@Post("signup")
- signup(@Body() userDto:CreateUserDto){
-  return this.authService.signUp(userDto)
-}
+  @Public()
+  @Post('signup')
+  signup(@Body() userDto: CreateUserDto) {
+    return this.authService.signUp(userDto);
+  }
 
-@Public()
-@UseGuards(RefreshAuthGuard)
-@Post("refresh")
-refresh(@Req() req:AuthRequest){
-  return this.authService.refreshToken(req.user.id)
-}
+  @Public()
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  refresh(@Req() req: AuthRequest) {
+    return this.authService.refreshToken(req.user.id);
+  }
 
-
-@UseGuards(JwtAuthGuard)
-@Post("signout")
-signout(@Req() req:AuthRequest){
-  return this.authService.signOut(req.user.id)
-} 
-
-
-  
+  @UseGuards(JwtAuthGuard)
+  @Post('signout')
+  signout(@Req() req: AuthRequest) {
+    return this.authService.signOut(req.user.id);
+  }
 }

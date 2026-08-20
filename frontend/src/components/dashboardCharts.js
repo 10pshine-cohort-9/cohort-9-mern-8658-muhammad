@@ -20,16 +20,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const chartData = [
-  { day: "Sun", desktop: 214 },
-  { day: "Mon", desktop: 186 },
-  { day: "Tue", desktop: 305 },
-  { day: "Wed", desktop: 237 },
-  { day: "Thu", desktop: 73 },
-  { day: "Fri", desktop: 209 },
-  { day: "Sat", desktop: 214 },
-];
-
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
 
@@ -44,7 +34,20 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
-export function ChartAreaLinear() {
+export function ChartAreaLinear({ data }) {
+  let chartData = [
+    { date: "Mon", count: 0 },
+    { date: "Tue", count: 0 },
+    { date: "Wed", count: 0 },
+    { date: "Thu", count: 0 },
+    { date: "Fri", count: 0 },
+    { date: "Sat", count: 0 },
+    { date: "Sun", count: 0 },
+  ];
+  if (data) {
+    chartData = data;
+  }
+
   return (
     <Card className="font-sans shadow bg-[#FCFDFF] dark:bg-[#0D0F1D]">
       <CardHeader>
@@ -84,10 +87,8 @@ export function ChartAreaLinear() {
               </linearGradient>
             </defs>
 
-           
-
             <XAxis
-              dataKey="day"
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tick={{ fill: "#6B7280", fontSize: 13 }}
@@ -102,11 +103,9 @@ export function ChartAreaLinear() {
               }}
             />
 
-                       
-
             <Area
               type="linear"
-              dataKey="desktop"
+              dataKey="count"
               stroke="#8b5cf6"
               strokeWidth={3}
               fill="url(#purpleGradient)"
@@ -124,8 +123,5 @@ export function ChartAreaLinear() {
 
       <CardFooter className={"bg-transparent border-0"}></CardFooter>
     </Card>
-  );  
+  );
 }
-
-
-

@@ -12,6 +12,16 @@ export class UserController {
     return this.userService.userProfile(req.user.id);
   }
 
+  @Get('/stats')
+  findUserStats(@Req() req: AuthRequest) {
+    return this.userService.userstats(req.user.id);
+  }
+
+  @Get('/dashboard')
+  dashboard(@Req() req: AuthRequest) {
+    return this.userService.dashboard(req.user.id);
+  }
+
   @Patch()
   update(@Req() req: AuthRequest, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(req.user.id, updateUserDto);

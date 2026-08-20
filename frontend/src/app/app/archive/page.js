@@ -1,33 +1,72 @@
-
 "use client";
 
 import { Archive } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import Notes from "@/components/notes";
+import {
+  archievedNote,
+  deleteNote,
+  favoriteNote,
+  pinnedNote,
+} from "../notes/action";
+import { useEffect, useState } from "react";
+import { toast } from "@/components/ui/toast";
+import { getArchivedNote } from "./action";
+import { useRouter } from "next/navigation";
 
-const archivedNotes = [
-  
-//   {
-//     id: 1,
-//     title: "Old Meeting Notes",
-//     category: "Work",
-//     content: "Discussion about Q2 roadmap...",
-//     tags: ["meeting", "work"],
-//     createdAt: "2 weeks ago",
-//     favorite: false,
-//     pinned: false,
-//   },
-];
 function page() {
+  const [archivedNotes, setNotes] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    let getAllNotes = async () => {
+      const res = await getArchivedNote();
+      if (!res.success) {
+        toast.add({ type: "error", description: res.message });
+      }
+      setNotes(res.notes);
+    };
+    getAllNotes();
+  }, []);
+
+  let handleToggle = async (id, action) => {
+    let res;
+
+    if (action === "favorite") {
+      res = await favoriteNote(id);
+    } else if (action === "pinned") {
+      res = await pinnedNote(id);
+    } else if (action === "archived") {
+      res = await archievedNote(id);
+    } else if (action === "delete") {
+      res = await deleteNote(id);
+    } else {
+      return;
+    }
+    if (!res?.success) {
+      toast.add({
+        type: "error",
+        description: res?.message || "Something went wrong",
+      });
+
+      return;
+    }
+    if (action === "delete") {
+      router.refresh();
+    }
+    setNotes((prev) =>
+      prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-6">
+    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Archive</h1>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Archive
+        </h1>
 
         <p className="mt-2 text-muted-foreground">
           {archivedNotes.length} archived{" "}
@@ -42,11 +81,11 @@ function page() {
               <Archive className="h-8 w-8 text-white" />
             </div>
 
-            <h2 className="mt-6 text-3xl font-bold">
+            <h2 className="mt-6 text-nowrap text-xl sm:text-2xl md:text-3xl font-bold">
               Archive is empty
             </h2>
 
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-center text-muted-foreground">
               Archived notes will appear here.
             </p>
           </CardContent>
@@ -56,13 +95,16 @@ function page() {
           {archivedNotes.map((note) => (
             <Notes
               key={note.id}
+              id={note.id}
               title={note.title}
               category={note.category}
               content={note.content}
               tags={note.tags}
               createdAt={note.createdAt}
+              archive={note.archived}
               favorite={note.favorite}
               pinned={note.pinned}
+              onNoteAction={handleToggle}
             />
           ))}
         </div>
@@ -71,4 +113,4 @@ function page() {
   );
 }
 
-export default page
+export default page;

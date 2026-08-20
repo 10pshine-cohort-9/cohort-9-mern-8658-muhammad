@@ -24,7 +24,10 @@ export class ActivityService {
   }
 
   async findAll(userId: string) {
-    const allAct = await this.actRepo.find({ where: { user: { id: userId } } });
+    const allAct = await this.actRepo.find({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
     return allAct;
   }
 }

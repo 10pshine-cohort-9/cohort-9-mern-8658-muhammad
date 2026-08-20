@@ -19,7 +19,8 @@ describe('NoteController', () => {
   };
 
   beforeEach(async () => {
-    let module: TestingModule = await Test.createTestingModule({
+    jest.clearAllMocks();
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [NoteController],
       providers: [
         {
