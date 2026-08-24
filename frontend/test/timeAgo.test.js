@@ -1,8 +1,16 @@
 import { timeAgo } from "../src/lib/timeAgo";
 
 describe("timeAgo", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("returns seconds ago for recent timestamps", () => {
-    const now = new Date();
+    const now = new Date("2026-08-24T12:00:00.000Z");
+
+    jest.useFakeTimers();
+    jest.setSystemTime(now);
+
     const past = new Date(now.getTime() - 45 * 1000);
 
     expect(timeAgo(past.toISOString())).toBe("45 sec ago");

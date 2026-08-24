@@ -162,6 +162,7 @@ describe('NoteService', () => {
         user: {
           id: userId,
         },
+        archived: false,
       },
       order: {
         pinned: 'DESC',
