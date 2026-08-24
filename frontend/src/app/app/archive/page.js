@@ -53,8 +53,9 @@ function page() {
 
       return;
     }
-    if (action === "delete") {
-      router.refresh();
+    if (action === "delete" || action === "archived") {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
+      return;
     }
     setNotes((prev) =>
       prev.map((note) => (note.id === res.notes.id ? res.notes : note)),

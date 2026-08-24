@@ -227,7 +227,9 @@ function page() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+                <AlertDialogCancel disabled={isDeleting} variant="outline">
+                  Cancel
+                </AlertDialogCancel>
                 <AlertDialogAction
                   disabled={isDeleting}
                   onClick={handleDeleteAccount}

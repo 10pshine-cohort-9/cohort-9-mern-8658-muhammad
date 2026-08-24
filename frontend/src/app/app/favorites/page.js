@@ -53,7 +53,7 @@ function Page() {
 
       return;
     }
-    if (action === "delete") {
+    if (action === "delete" || action === "archived") {
       setNotes((prev) => prev.filter((note) => note.id !== id));
       return;
     }

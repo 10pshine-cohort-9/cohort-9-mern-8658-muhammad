@@ -5,7 +5,6 @@ import { AxiosReq } from "@/lib/api/server-api";
 export async function updateNote(id, note) {
   try {
     const api = await AxiosReq();
-    console.log(note);
     const isEmpty =
       !note.content || note.content.replace(/<[^>]*>/g, "").trim() === "";
 

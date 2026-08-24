@@ -54,6 +54,7 @@ export class NoteService {
         user: {
           id: userId,
         },
+        archived: false,
       },
       order: { pinned: 'DESC', createdAt: 'DESC' },
     });

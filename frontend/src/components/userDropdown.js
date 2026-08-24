@@ -17,6 +17,7 @@ import { Userlogout } from "@/lib/api/logout";
 import { useRouter } from "next/navigation";
 
 export function UserDropdown() {
+  const router = useRouter();
   let { logout } = useUser();
 
   let handlelogout = async () => {
