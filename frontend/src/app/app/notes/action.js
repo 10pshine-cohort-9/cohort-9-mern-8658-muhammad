@@ -1,6 +1,5 @@
 "use server";
 import { AxiosReq } from "@/lib/api/server-api";
-import { revalidatePath } from "next/cache";
 
 export async function getNotes() {
   try {
@@ -62,7 +61,7 @@ export async function archievedNote(id) {
 export async function deleteNote(id) {
   try {
     const api = await AxiosReq();
-    const res = await api.delete(`/note/${id}`);
+    await api.delete(`/note/${id}`);
     return {
       success: true,
     };

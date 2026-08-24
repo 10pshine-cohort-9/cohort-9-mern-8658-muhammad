@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, ResponsiveContainer, Tooltip, Sector } from "recharts";
 
 import {
   Card,
@@ -21,6 +21,30 @@ const CATEGORY_COLORS = {
 const DEFAULT_CATEGORIES = ["Personal", "Work", "Ideas", "Learning", "Journal"];
 
 const FALLBACK_COLOR = "#6B7280";
+
+function CustomPieShape({
+  cx,
+  cy,
+  innerRadius,
+  outerRadius,
+  startAngle,
+  endAngle,
+  payload,
+}) {
+  return (
+    <Sector
+      cx={cx}
+      cy={cy}
+      innerRadius={innerRadius}
+      outerRadius={outerRadius}
+      startAngle={startAngle}
+      endAngle={endAngle}
+      fill={payload?.color ?? FALLBACK_COLOR}
+      stroke="white"
+      strokeWidth={5}
+    />
+  );
+}
 
 export default function CategoriesCard({ data = [] }) {
   const counts = new Map();
@@ -44,15 +68,16 @@ export default function CategoriesCard({ data = [] }) {
   }));
 
   return (
-    <Card className="rounded-3xl shadow bg-[#FCFDFF] dark:bg-[#0D0F1D]">
+    <Card className="rounded-3xl bg-[#FCFDFF] shadow dark:bg-[#0D0F1D]">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Categories</CardTitle>
+
         <CardDescription>Distribution of your notes</CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="flex items-center justify-between gap-6">
-          <div className="h-44 w-44 mt-16">
+          <div className="mt-16 h-44 w-44">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Tooltip
@@ -68,27 +93,23 @@ export default function CategoriesCard({ data = [] }) {
                 <Pie
                   data={chartData}
                   dataKey="value"
+                  nameKey="name"
                   innerRadius={50}
                   outerRadius={72}
                   startAngle={180}
                   endAngle={-180}
                   paddingAngle={4}
-                  stroke="white"
-                  strokeWidth={5}
-                >
-                  {chartData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
+                  shape={CustomPieShape}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="flex-1 space-y-3 mt-16">
+          <div className="mt-16 flex-1 space-y-3">
             {chartData.map((item) => (
               <div
                 key={item.name}
-                className="flex items-center gap-2 justify-between"
+                className="flex items-center justify-between gap-2"
               >
                 <div className="flex items-center gap-2">
                   <div

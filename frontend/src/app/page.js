@@ -11,7 +11,6 @@ import {
   StickyNote,
   Zap,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -92,7 +91,10 @@ export default function Home() {
               Sign in
             </Link>
 
-            <Link href={"/auth/signup"} className=" flex w-full items-center  gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+            <Link
+              href={"/auth/signup"}
+              className=" flex w-full items-center  gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            >
               Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -104,10 +106,9 @@ export default function Home() {
           <SparklesIcon className="size-4 text-violet-600" />
           New — Rich text editor with markdown preview
         </div>
-
         <div className="mx-auto max-w-3xl text-center mt-7">
           <h2 className="text-4xl  font-extrabold   md:text-6xl ">
-            Your ideas,
+            Your ideas,{" "}
             <span
               className="bg-[linear-gradient(135deg,#8B3DFF,#3F7BFF)]
     dark:bg-[linear-gradient(135deg,#A56CFF,#5A8EFF)]
@@ -126,13 +127,19 @@ export default function Home() {
           </p>
 
           <div className="flex gap-4 items-center justify-center mt-5">
-            <Link href={'/auth/signup'} className=" flex items-center  gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+            <Link
+              href={"/auth/signup"}
+              className=" flex items-center  gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-sky-500 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            >
               Get Started <ArrowRight className="h-4 w-4" />
             </Link>
 
-           <Link href={"/auth/login"}>  <Button variant="outline"  className={"px-4 py-5 rounded-2xl"}>
-              Explore Dashboard
-            </Button></Link>
+            <Link href={"/auth/login"}>
+              {" "}
+              <Button variant="outline" className={"px-4 py-5 rounded-2xl"}>
+                Explore Dashboard
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -261,17 +268,22 @@ export default function Home() {
         })}
       </div>
 
-<footer className="border-t border-border">
+      <footer className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-8 text-sm text-muted-foreground md:flex-row">
           <div>© {new Date().getFullYear()} NoteSphere. Crafted with care.</div>
           <div className="flex items-center gap-4">
-            <Link href="/about" className="hover:text-foreground">About</Link>
-            <Link href="/help" className="hover:text-foreground">Help</Link>
-            <Link href="/auth/login" className="hover:text-foreground">Sign in</Link>
+            <Link href="/about" className="hover:text-foreground">
+              About
+            </Link>
+            <Link href="/help" className="hover:text-foreground">
+              Help
+            </Link>
+            <Link href="/auth/login" className="hover:text-foreground">
+              Sign in
+            </Link>
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

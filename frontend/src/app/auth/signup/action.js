@@ -15,7 +15,7 @@ export async function register(formdata) {
       };
     }
 
-    const res = await axiosClient.post("/auth/signup", {
+    await axiosClient.post("/auth/signup", {
       name,
       email,
       password,

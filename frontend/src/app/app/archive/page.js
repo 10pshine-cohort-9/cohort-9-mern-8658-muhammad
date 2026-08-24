@@ -14,11 +14,9 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { getArchivedNote } from "./action";
-import { useRouter } from "next/navigation";
 
 function page() {
-  const [archivedNotes, setNotes] = useState([]);
-  const router = useRouter();
+  const [archivedNotes, setArchivedNotes] = useState([]);
 
   useEffect(() => {
     let getAllNotes = async () => {
@@ -26,7 +24,7 @@ function page() {
       if (!res.success) {
         toast.add({ type: "error", description: res.message });
       }
-      setNotes(res.notes);
+      setArchivedNotes(res.notes);
     };
     getAllNotes();
   }, []);
@@ -57,11 +55,11 @@ function page() {
       }
 
       if (action === "delete" || action === "archived") {
-        setNotes((prev) => prev.filter((note) => note.id !== id));
+        setArchivedNotes((prev) => prev.filter((note) => note.id !== id));
         return;
       }
 
-      setNotes((prev) =>
+      setArchivedNotes((prev) =>
         prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
       );
     } catch (error) {

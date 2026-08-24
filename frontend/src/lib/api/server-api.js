@@ -3,7 +3,6 @@
 import axios from "axios";
 import { cookies } from "next/headers";
 import { API_URL } from "./axios";
-import { redirect } from "next/navigation";
 
 export async function AxiosReq() {
   const cookieStore = await cookies();

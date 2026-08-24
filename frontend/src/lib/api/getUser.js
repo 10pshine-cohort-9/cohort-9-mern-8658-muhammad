@@ -11,20 +11,16 @@ export async function getUser() {
     return null;
   }
 
-  try {
-    const response = await axios.get(`${API_URL}/user`, {
-      headers: accessToken
-        ? { Authorization: `Bearer ${accessToken}` }
-        : undefined,
-      validateStatus: (status) => status < 500,
-    });
+  const response = await axios.get(`${API_URL}/user`, {
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
+    validateStatus: (status) => status < 500,
+  });
 
-    if (response.status === 200) {
-      return response.data;
-    }
-
-    return null;
-  } catch (error) {
-    return null;
+  if (response.status === 200) {
+    return response.data;
   }
+
+  return null;
 }
