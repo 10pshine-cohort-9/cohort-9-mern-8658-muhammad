@@ -1,6 +1,0 @@
-projectKey=nest-js-note-api-10pearls
-serverUrl=http://localhost:9000
-serverVersion=26.8.0.126808
-dashboardUrl=http://localhost:9000/dashboard?id=nest-js-note-api-10pearls
-ceTaskId=ba36edc7-5f5b-4aba-b4a3-2d18cc8a1a84
-ceTaskUrl=http://localhost:9000/api/ce/task?id=ba36edc7-5f5b-4aba-b4a3-2d18cc8a1a84
