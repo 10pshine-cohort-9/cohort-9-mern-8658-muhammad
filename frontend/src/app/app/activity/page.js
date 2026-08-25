@@ -77,56 +77,50 @@ const defaultActivityConfig = {
 };
 
 async function page() {
-  try {
-    let api = await AxiosReq();
-    let res = await api.get("/activity");
-    let activities = await res.data;
+  let api = await AxiosReq();
+  let res = await api.get("/activity");
+  let activities = await res.data;
 
-    return (
-      <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 ">
-        <h1 className="text-2xl md:text-3xl font-bold">Activity</h1>
+  return (
+    <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 ">
+      <h1 className="text-2xl md:text-3xl font-bold">Activity</h1>
 
-        <p className="mt-2 text-muted-foreground">
-          Everything that happened, in order
-        </p>
+      <p className="mt-2 text-muted-foreground">
+        Everything that happened, in order
+      </p>
 
-        <Card className="mt-8 overflow-hidden rounded-3xl gap-0 p-0 dark:bg-[#101321]">
-          {activities.map((activity, index) => {
-            const config =
-              activityConfig[activity.action] ?? defaultActivityConfig;
+      <Card className="mt-8 overflow-hidden rounded-3xl gap-0 p-0 dark:bg-[#101321]">
+        {activities.map((activity, index) => {
+          const config =
+            activityConfig[activity.action] ?? defaultActivityConfig;
 
-            const Icon = config.icon;
+          const Icon = config.icon;
 
-            return (
+          return (
+            <div
+              key={activity.id}
+              className={`flex items-center gap-5 p-4 ${
+                index !== activities.length - 1 ? "border-b " : ""
+              }`}
+            >
               <div
-                key={activity.id}
-                className={`flex items-center gap-5 p-4 ${
-                  index !== activities.length - 1 ? "border-b " : ""
-                }`}
+                className={`flex h-10 w-10 items-center justify-center rounded-full bg-[#EFF1FC] dark:bg-[#1D2130]`}
               >
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full bg-[#EFF1FC] dark:bg-[#1D2130]`}
-                >
-                  <Icon className={`h-4 w-4 ${config.color}`} />
-                </div>
-
-                <div>
-                  <p className="text-sm">
-                    <span className="">{activity.message}</span>
-                  </p>
-
-                  <p className="text-xs text-muted-foreground">
-                    {activity.time}
-                  </p>
-                </div>
+                <Icon className={`h-4 w-4 ${config.color}`} />
               </div>
-            );
-          })}
-        </Card>
-      </div>
-    );
-  } catch (error) {
-    throw new Error("Failed to load activity");
-  }
+
+              <div>
+                <p className="text-sm">
+                  <span className="">{activity.message}</span>
+                </p>
+
+                <p className="text-xs text-muted-foreground">{activity.time}</p>
+              </div>
+            </div>
+          );
+        })}
+      </Card>
+    </div>
+  );
 }
 export default page;

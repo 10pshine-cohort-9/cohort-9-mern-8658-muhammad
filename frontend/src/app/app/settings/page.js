@@ -2,13 +2,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Bell, Laptop, Monitor, Moon, Sun, Trash2 } from "lucide-react";
+import {
+  Bell,
+  Laptop,
+  Monitor,
+  Moon,
+  Sun,
+  Trash2,
+  Trash2Icon,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { DeleteAccount } from "./action";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
-import { Trash2Icon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,7 +71,8 @@ function page() {
     } catch (error) {
       toast.add({
         type: "error",
-        description: "Failed to delete account",
+        description:
+          error instanceof Error ? error.message : "Failed to delete account",
       });
     } finally {
       setIsDeleting(false);

@@ -1,5 +1,3 @@
-import { SearchIcon } from "lucide-react";
-
 import {
   Empty,
   EmptyContent,

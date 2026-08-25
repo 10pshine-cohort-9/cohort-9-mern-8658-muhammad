@@ -32,6 +32,22 @@ import {
 } from "./notes/action";
 import { toast } from "@/components/ui/toast";
 
+function updatePinnedNotes(pinnedNotes, updatedNote) {
+  if (!updatedNote.pinned || updatedNote.archived) {
+    return pinnedNotes.filter((note) => note.id !== updatedNote.id);
+  }
+
+  const alreadyPinned = pinnedNotes.some((note) => note.id === updatedNote.id);
+
+  if (alreadyPinned) {
+    return pinnedNotes.map((note) =>
+      note.id === updatedNote.id ? updatedNote : note,
+    );
+  }
+
+  return [updatedNote, ...pinnedNotes];
+}
+
 function Page() {
   const router = useRouter();
 
@@ -65,7 +81,7 @@ function Page() {
           ...res.data,
           stats: {
             ...prev.stats,
-            ...(res.data?.stats ?? {}),
+            ...res.data?.stats,
           },
           weeklyNotes: res.data?.weeklyNotes ?? [],
           categories: res.data?.categories ?? [],
@@ -73,8 +89,6 @@ function Page() {
           pinnedNotes: res.data?.pinnedNotes ?? [],
         }));
       } catch (error) {
-        console.error("Dashboard error:", error);
-
         toast.add({
           type: "error",
           description:
@@ -142,14 +156,7 @@ function Page() {
           note.id === updatedNote.id ? updatedNote : note,
         ),
 
-        pinnedNotes:
-          updatedNote.pinned && !updatedNote.archived
-            ? prev.pinnedNotes.some((note) => note.id === updatedNote.id)
-              ? prev.pinnedNotes.map((note) =>
-                  note.id === updatedNote.id ? updatedNote : note,
-                )
-              : [updatedNote, ...prev.pinnedNotes]
-            : prev.pinnedNotes.filter((note) => note.id !== updatedNote.id),
+        pinnedNotes: updatePinnedNotes(prev.pinnedNotes, updatedNote),
       }));
     } catch (error) {
       console.error("Note action error:", error);

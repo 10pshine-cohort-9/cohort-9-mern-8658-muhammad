@@ -1,6 +1,6 @@
 "use client";
 
-export default function Error({ error, reset }) {
+export default function ErrorPage({ error, reset }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F9FAFE] px-4 -pb-10 dark:bg-[#070811]">
       <div className="w-full max-w-md rounded-3xl  p-8 text-center shadow-sm dark:border-white/10 dark:bg-[#101321]">
@@ -17,6 +17,7 @@ export default function Error({ error, reset }) {
         )}
 
         <button
+          type="button"
           onClick={() => reset()}
           className="mt-6 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
