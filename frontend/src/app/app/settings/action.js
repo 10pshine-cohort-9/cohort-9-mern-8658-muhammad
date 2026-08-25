@@ -8,6 +8,11 @@ export async function DeleteAccount() {
     let cookiesStore = await cookies();
     const accessToken = cookiesStore.get("access_token")?.value;
     const api = await AxiosReq();
+     if (!accessToken) {
+       return {
+         success: false,
+       };
+     }
 
     if (accessToken) {
       const res = await api.delete("/user");

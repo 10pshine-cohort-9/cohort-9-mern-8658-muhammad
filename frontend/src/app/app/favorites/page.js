@@ -31,35 +31,45 @@ function Page() {
   }, []);
 
   let handleToggle = async (id, action) => {
-    let res;
-    if (action === "favorite") {
-      res = await favoriteNote(id);
-    } else if (action === "pinned") {
-      res = await pinnedNote(id);
-    } else if (action === "archived") {
-      res = await archievedNote(id);
-    } else if (action === "delete") {
-      res = await deleteNote(id);
-      router.refresh();
-    } else {
-      return;
-    }
+    try {
+      let res;
 
-    if (!res?.success) {
+      if (action === "favorite") {
+        res = await favoriteNote(id);
+      } else if (action === "pinned") {
+        res = await pinnedNote(id);
+      } else if (action === "archived") {
+        res = await archievedNote(id);
+      } else if (action === "delete") {
+        res = await deleteNote(id);
+        router.refresh();
+      } else {
+        return;
+      }
+
+      if (!res?.success) {
+        toast.add({
+          type: "error",
+          description: res?.message || "Something went wrong",
+        });
+
+        return;
+      }
+
+      if (action === "delete" || action === "archived") {
+        setNotes((prev) => prev.filter((note) => note.id !== id));
+        return;
+      }
+
+      setNotes((prev) =>
+        prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
+      );
+    } catch (error) {
       toast.add({
         type: "error",
-        description: res?.message || "Something went wrong",
+        description: error?.message || "Something went wrong",
       });
-
-      return;
     }
-    if (action === "delete") {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
-      return;
-    }
-    setNotes((prev) =>
-      prev.map((note) => (note.id === res.notes.id ? res.notes : note)),
-    );
   };
 
   return (
