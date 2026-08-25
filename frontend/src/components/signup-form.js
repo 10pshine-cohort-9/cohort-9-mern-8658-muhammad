@@ -62,7 +62,6 @@ export function SignupForm({ ...props }) {
               />
             </Field>
             <Field>
-              FieldLabel
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"

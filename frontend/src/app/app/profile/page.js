@@ -11,8 +11,13 @@ import { getUserStats, UpdateProfile } from "./action";
 import { toast } from "@/components/ui/toast";
 
 function page() {
+  const emptyUser = {
+    name: "",
+    email: "",
+    bio: "",
+  };
   const { user } = useUser();
-  const [userData, setUserData] = useState(user ?? null);
+  const [userData, setUserData] = useState(user ?? emptyUser);
   const [name, setName] = useState(user?.name ?? "");
   const [userStats, setUserStats] = useState({
     counts: 0,
@@ -42,7 +47,7 @@ function page() {
 
   useEffect(() => {
     if (!user) {
-      setUserData(null);
+      setUserData(emptyUser);
       setName("");
       return;
     }
@@ -62,7 +67,7 @@ function page() {
       setUserStats(res.data);
     };
     getStats();
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 ">

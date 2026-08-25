@@ -270,7 +270,7 @@ export default function Home() {
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-8 text-sm text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} NoteSphere. Crafted with care.</div>
+          <div>© 2026 NoteSphere. Crafted with care.</div>
           <div className="flex items-center gap-4">
             <Link href="/about" className="hover:text-foreground">
               About

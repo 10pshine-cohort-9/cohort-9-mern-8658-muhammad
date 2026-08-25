@@ -160,6 +160,7 @@ export default function NoteDetailsPage() {
         });
         return;
       }
+      const previousNote = note;
 
       if (res.notes) {
         setNote(res.notes);
@@ -167,7 +168,7 @@ export default function NoteDetailsPage() {
 
       toast.add({
         type: "success",
-        description: getActionSuccessMessage(action, res.notes || note),
+        description: getActionSuccessMessage(action, previousNote),
       });
     } catch {
       toast.add({

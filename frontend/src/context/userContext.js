@@ -14,7 +14,7 @@ export function UserProvider({ children, initialUser = null }) {
 
   const logout = useCallback(() => {
     setUser(null);
-  });
+  }, []);
   const contextValue = useMemo(
     () => ({
       user,

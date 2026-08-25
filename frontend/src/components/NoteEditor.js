@@ -30,6 +30,7 @@ export default function NoteEditor({
 }) {
   const [preview, setPreview] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const tags = Array.isArray(note?.tags) ? note.tags : [];
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -45,14 +46,14 @@ export default function NoteEditor({
 
     if (!tag) return;
 
-    if (note.tags.includes(tag)) {
+    if (tags.includes(tag)) {
       setTagInput("");
       return;
     }
 
     setNote((prev) => ({
       ...prev,
-      tags: [...prev.tags, tag],
+      tags: [...(Array.isArray(prev.tags) ? prev.tags : []), tag],
     }));
 
     setTagInput("");
@@ -193,7 +194,7 @@ export default function NoteEditor({
                         [&_hr]:my-6
                       "
                       dangerouslySetInnerHTML={{
-                        __html: note.content || "",
+                        __html: DOMPurify.sanitize(note.content || ""),
                       }}
                     />
                   </CardContent>
@@ -211,7 +212,7 @@ export default function NoteEditor({
               <CardContent>
                 <Card className="bg-[#F9FAFE] dark:bg-[#070811]">
                   <CardContent>
-                    <Field orientation="Horizontal">
+                    <Field orientation="horizontal">
                       <FieldContent>
                         <FieldTitle>
                           <Pin className="size-4 text-violet-700" />
@@ -234,7 +235,7 @@ export default function NoteEditor({
 
                 <Card className="mt-3 bg-[#F9FAFE] dark:bg-[#070811]">
                   <CardContent>
-                    <Field orientation="Horizontal">
+                    <Field orientation="horizontal">
                       <FieldContent>
                         <FieldTitle>
                           <Star className="size-4 text-violet-700" />
@@ -315,9 +316,9 @@ export default function NoteEditor({
                   </Button>
                 </div>
 
-                {note.tags.length > 0 && (
+                {tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {note.tags.map((tag) => (
+                    {tags.map((tag) => (
                       <div
                         key={tag}
                         className="rounded-md bg-violet-500/10 px-2.5 py-1 text-sm text-violet-600 dark:text-violet-400"

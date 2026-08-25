@@ -25,7 +25,6 @@ export const Userlogout = async () => {
       success: true,
     };
   } catch (error) {
-    console.log(error);
     return { success: false };
   }
 };

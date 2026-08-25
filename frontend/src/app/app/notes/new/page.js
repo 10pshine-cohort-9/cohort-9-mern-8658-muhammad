@@ -19,28 +19,43 @@ const initialNote = {
 
 export default function NewNotePage() {
   const router = useRouter();
+
   const [note, setNote] = useState(initialNote);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const res = await addNote(note);
+    if (submitting) return;
 
-    if (res.success) {
+    setSubmitting(true);
+
+    try {
+      const res = await addNote(note);
+
+      if (res.success) {
+        toast.add({
+          type: "success",
+          description: res.message,
+        });
+
+        router.push("/app/notes");
+        return;
+      }
+
       toast.add({
-        type: "success",
+        type: "error",
         description: res.message,
       });
-
-      router.push("/app/notes");
-      return;
+    } catch (error) {
+      toast.add({
+        type: "error",
+        description:
+          error instanceof Error ? error.message : "Unable to create note",
+      });
+    } finally {
+      setSubmitting(false);
     }
-
-    toast.add({
-      type: "error",
-      description: res.message,
-    });
   }
-
   return <NoteEditor note={note} setNote={setNote} onSubmit={handleSubmit} />;
 }

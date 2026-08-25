@@ -13,6 +13,7 @@ import {
 
 import { Card } from "@/components/ui/card";
 import { AxiosReq } from "@/lib/api/server-api";
+import { timeAgo } from "@/lib/timeAgo";
 
 const activityConfig = {
   NOTE_CREATED: {
@@ -114,7 +115,9 @@ async function page() {
                   <span className="">{activity.message}</span>
                 </p>
 
-                <p className="text-xs text-muted-foreground">{activity.time}</p>
+                <p className="text-xs text-muted-foreground">
+                  {timeAgo(activity.createdAt)}
+                </p>
               </div>
             </div>
           );
