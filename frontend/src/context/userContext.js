@@ -1,19 +1,31 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 const UserContext = createContext();
 
 export function UserProvider({ children, initialUser = null }) {
   const [user, setUser] = useState(initialUser);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
-  };
+  }, []);
+  const contextValue = useMemo(
+    () => ({
+      user,
+      setUser,
+      logout,
+    }),
+    [user, logout],
+  );
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 }
 

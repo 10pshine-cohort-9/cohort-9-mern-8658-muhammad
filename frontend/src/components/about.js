@@ -1,16 +1,9 @@
-
-
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  FileText,
-  Heart,
-  Globe,
-} from "lucide-react";
+import { FileText, Heart, Globe } from "lucide-react";
 
 function AboutPage() {
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] p-8">
-   
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
           About NoteSphere
@@ -34,9 +27,9 @@ function AboutPage() {
 
             <p className="mt-3 leading-8 text-muted-foreground">
               NoteSphere is a modern notes workspace born from a simple
-              frustration: existing tools were either too heavy or too plain.
-              We wanted something fast, thoughtful, and delightful — a place
-              where ideas feel welcome.
+              frustration: existing tools were either too heavy or too plain. We
+              wanted something fast, thoughtful, and delightful — a place where
+              ideas feel welcome.
             </p>
 
             <p className="mt-3 leading-8 text-muted-foreground">
@@ -52,9 +45,7 @@ function AboutPage() {
               <div className="mb-5 flex items-center gap-2">
                 <Heart className="h-5 w-5 text-violet-500" />
 
-                <h3 className="text-xl font-semibold">
-                  Values
-                </h3>
+                <h3 className="text-xl font-semibold">Values</h3>
               </div>
 
               <ul className="space-y-3 text-muted-foreground">
@@ -71,9 +62,7 @@ function AboutPage() {
               <div className="mb-5 flex items-center gap-2">
                 <Globe className="h-5 w-5 text-violet-500" />
 
-                <h3 className="text-xl font-semibold">
-                  Version
-                </h3>
+                <h3 className="text-xl font-semibold">Version</h3>
               </div>
 
               <p className="leading-7 text-muted-foreground">
@@ -88,4 +77,4 @@ function AboutPage() {
   );
 }
 
-export default AboutPage
+export default AboutPage;

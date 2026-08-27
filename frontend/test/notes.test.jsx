@@ -38,9 +38,18 @@ describe("Notes component", () => {
     expect(screen.getByText("Work")).toBeInTheDocument();
     expect(screen.getByText("#planning")).toBeInTheDocument();
 
-    await user.click(
-      screen.getByRole("link", { name: /open note: my project/i }),
-    );
+    try {
+      await user.click(
+        screen.getByRole("link", { name: /open note: my project/i }),
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to click the "Open note: My Project" link: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+
     expect(mockPush).toHaveBeenCalledWith("/app/notes/12");
   });
 
@@ -63,7 +72,18 @@ describe("Notes component", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /toggle favorite/i }));
+    try {
+      await user.click(
+        screen.getByRole("button", { name: /toggle favorite/i }),
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to click the "Toggle favorite" button: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+
     expect(onNoteAction).toHaveBeenCalledWith(7, "favorite");
   });
 });

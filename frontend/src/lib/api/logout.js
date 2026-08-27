@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { AxiosReq } from "./server-api";
 
-export let Userlogout = async () => {
+export const Userlogout = async () => {
   let api = await AxiosReq();
   let cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;

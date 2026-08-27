@@ -12,6 +12,7 @@ import {
   PinOff,
   Star,
   Trash2,
+  Trash2Icon,
 } from "lucide-react";
 
 import { archievedNote, deleteNote, favoriteNote, pinnedNote } from "../action";
@@ -22,7 +23,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { timeAgo } from "@/lib/timeAgo";
 import { getNotebyId } from "./action";
 
-import { Trash2Icon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,6 +56,34 @@ function formatDateTime(date) {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+async function executeNoteAction(action, id) {
+  const actions = {
+    favorite: favoriteNote,
+    pinned: pinnedNote,
+    archived: archievedNote,
+  };
+
+  const actionFunction = actions[action];
+
+  if (!actionFunction) {
+    return null;
+  }
+
+  return actionFunction(id);
+}
+
+function getActionSuccessMessage(action, note) {
+  const messages = {
+    favorite: note.favorite ? "Removed from favorites" : "Added to favorites",
+
+    pinned: note.pinned ? "Note unpinned" : "Note pinned",
+
+    archived: note.archived ? "Note restored" : "Note archived",
+  };
+
+  return messages[action] || "Note updated successfully";
 }
 
 export default function NoteDetailsPage() {
@@ -92,7 +120,7 @@ export default function NoteDetailsPage() {
         }
 
         setNote(res.notes);
-      } catch (error) {
+      } catch {
         if (mounted) {
           toast.add({
             type: "error",
@@ -121,56 +149,28 @@ export default function NoteDetailsPage() {
     try {
       setActionLoading(true);
 
-      let res;
+      const res = await executeNoteAction(action, id);
 
-      switch (action) {
-        case "favorite":
-          res = await favoriteNote(id);
-          break;
-
-        case "pinned":
-          res = await pinnedNote(id);
-          break;
-
-        case "archived":
-          res = await archievedNote(id);
-          break;
-
-        default:
-          return;
-      }
+      if (!res) return;
 
       if (!res?.success) {
         toast.add({
           type: "error",
           description: res?.message || "Something went wrong",
         });
-
         return;
       }
+      const previousNote = note;
 
-      const updatedNote = res.notes;
-
-      if (updatedNote) {
-        setNote(updatedNote);
+      if (res.notes) {
+        setNote(res.notes);
       }
 
       toast.add({
         type: "success",
-        description:
-          action === "favorite"
-            ? note.favorite
-              ? "Removed from favorites"
-              : "Added to favorites"
-            : action === "pinned"
-              ? note.pinned
-                ? "Note unpinned"
-                : "Note pinned"
-              : note.archived
-                ? "Note restored"
-                : "Note archived",
+        description: getActionSuccessMessage(action, previousNote),
       });
-    } catch (error) {
+    } catch {
       toast.add({
         type: "error",
         description: "Something went wrong",
@@ -204,6 +204,7 @@ export default function NoteDetailsPage() {
 
       router.push("/app/notes");
     } catch (error) {
+      console.log(error);
       toast.add({
         type: "error",
         description: "Unable to delete note",

@@ -157,6 +157,7 @@ export default function Page() {
       <div className="mt-8 flex  gap-3 overflow-x-auto">
         {categories.map((category) => (
           <button
+            type="button"
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`rounded-full border px-5 py-2 text-sm transition ${

@@ -1,29 +1,32 @@
 "use server";
 
-import { AxiosReq } from "@/lib/api/server-api";
 import { cookies } from "next/headers";
+import { AxiosReq } from "@/lib/api/server-api";
 
 export async function DeleteAccount() {
   try {
-    let cookiesStore = await cookies();
+    const cookiesStore = await cookies();
     const accessToken = cookiesStore.get("access_token")?.value;
-    const api = await AxiosReq();
-     if (!accessToken) {
-       return {
-         success: false,
-       };
-     }
 
-    if (accessToken) {
-      const res = await api.delete("/user");
-
-      cookiesStore.delete("access_token");
-      cookiesStore.delete("refresh_token");
+    if (!accessToken) {
       return {
-        success: true,
+        success: false,
       };
     }
-  } catch (error) {
-    return { success: false };
+
+    const api = await AxiosReq();
+
+    await api.delete("/user");
+
+    cookiesStore.delete("access_token");
+    cookiesStore.delete("refresh_token");
+
+    return {
+      success: true,
+    };
+  } catch {
+    return {
+      success: false,
+    };
   }
 }

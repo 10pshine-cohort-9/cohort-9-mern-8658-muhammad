@@ -11,17 +11,22 @@ import { getUserStats, UpdateProfile } from "./action";
 import { toast } from "@/components/ui/toast";
 
 function page() {
+  const emptyUser = {
+    name: "",
+    email: "",
+    bio: "",
+  };
   const { user } = useUser();
-  const [userData, setuser] = useState(user ?? null);
-  const [name, setname] = useState(user?.name ?? "");
-  const [userStats, setUserstats] = useState({
+  const [userData, setUserData] = useState(user ?? emptyUser);
+  const [name, setName] = useState(user?.name ?? "");
+  const [userStats, setUserStats] = useState({
     counts: 0,
     archived: 0,
     favorite: 0,
   });
 
   const handleChange = (e) => {
-    setuser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setUserData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleUpdate = async (e) => {
@@ -32,19 +37,23 @@ function page() {
       return;
     }
     toast.add({ type: "success", description: "Save " });
-    setuser((prev) => ({ ...prev, name: res.user.name, bio: res.user.bio }));
-    setname(res.user.name);
+    setUserData((prev) => ({
+      ...prev,
+      name: res.user.name,
+      bio: res.user.bio,
+    }));
+    setName(res.user.name);
   };
 
   useEffect(() => {
     if (!user) {
-      setuser(null);
-      setname("");
+      setUserData(emptyUser);
+      setName("");
       return;
     }
 
-    setuser(user);
-    setname(user.name ?? "");
+    setUserData(user);
+    setName(user.name ?? "");
   }, [user]);
 
   useEffect(() => {
@@ -55,10 +64,10 @@ function page() {
         toast.add({ type: "error", description: "Failed to load Stats" });
         return;
       }
-      setUserstats(res.data);
+      setUserStats(res.data);
     };
     getStats();
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[#F9FAFE] dark:bg-[#070811] px-3 sm:px-6 py-6 ">

@@ -18,7 +18,6 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Link as LinkIcon,
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";

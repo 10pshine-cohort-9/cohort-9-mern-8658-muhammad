@@ -2,5 +2,5 @@ projectKey=Note-app
 serverUrl=http://localhost:9000
 serverVersion=26.8.0.126808
 dashboardUrl=http://localhost:9000/dashboard?id=Note-app
-ceTaskId=afbe6a66-840c-45c4-a3d9-c7d4fc634435
-ceTaskUrl=http://localhost:9000/api/ce/task?id=afbe6a66-840c-45c4-a3d9-c7d4fc634435
+ceTaskId=5a41a798-cb31-4124-8da9-606c24a0f456
+ceTaskUrl=http://localhost:9000/api/ce/task?id=5a41a798-cb31-4124-8da9-606c24a0f456

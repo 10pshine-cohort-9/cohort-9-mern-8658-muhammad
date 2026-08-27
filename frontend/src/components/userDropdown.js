@@ -41,7 +41,10 @@ export function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button className="rounded-full flex h-10 w-10 justify-center items-center bg-gradient-to-br from-violet-500 to-sky-500">
+          <button
+            type="button"
+            className="rounded-full flex h-10 w-10 justify-center items-center bg-gradient-to-br from-violet-500 to-sky-500"
+          >
             <User2 className="size-4.5 font-bold text-white " />
           </button>
         }

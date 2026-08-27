@@ -14,13 +14,15 @@ function AppLayout({ children }) {
           <TopNavBar sideOpen={sideOpen} setSideOpen={setSideOpen} />
         </div>
 
-        <main
-          className="flex-1 overflow-y-auto "
-          onClick={() => setSideOpen(false)}
-        >
-          {" "}
-          {children}
-        </main>
+        {sideOpen && (
+          <button
+            type="button"
+            aria-label="Close sidebar"
+            className="fixed inset-0 z-40 cursor-default bg-transparent"
+            onClick={() => setSideOpen(false)}
+          />
+        )}
+        <main className="flex-1 overflow-y-auto ">{children}</main>
       </div>
     </div>
   );
