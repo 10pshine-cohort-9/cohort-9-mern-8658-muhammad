@@ -42,6 +42,7 @@ export function UserDropdown() {
       <DropdownMenuTrigger
         render={
           <button
+            aria-label="Open account menu"
             type="button"
             className="rounded-full flex h-10 w-10 justify-center items-center bg-gradient-to-br from-violet-500 to-sky-500"
           >

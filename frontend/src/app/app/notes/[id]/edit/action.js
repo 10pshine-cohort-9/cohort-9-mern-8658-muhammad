@@ -5,9 +5,9 @@ import { AxiosReq } from "@/lib/api/server-api";
 export async function updateNote(id, note) {
   try {
     const api = await AxiosReq();
-    // NOSONAR - Tiptap HTML content is stripped here intentionally
+
     const isEmpty =
-      !note.content || note.content.replace(/<[^>]+>/g, "").trim() === "";
+      !note.content || note.content.replace(/<[^>]+>/g, "").trim() === ""; // NOSONAR
 
     if (isEmpty) {
       return {
