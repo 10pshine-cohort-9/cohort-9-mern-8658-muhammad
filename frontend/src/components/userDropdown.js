@@ -15,6 +15,7 @@ import { User2 } from "lucide-react";
 import { toast } from "./ui/toast";
 import { Userlogout } from "@/lib/api/logout";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function UserDropdown() {
   const router = useRouter();
@@ -54,11 +55,11 @@ export function UserDropdown() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuItem>
-            Profile
+            <Link href="/app/profile">Profile</Link>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            Settings
+            <Link href={"/app/settings"}>Settings</Link>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Grid2X2, List, Plus } from "lucide-react";
+import { Grid2X2, List, Plus, Search } from "lucide-react";
 
 import Notes from "@/components/notes";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ const categories = ["All", "Personal", "Work", "Ideas", "Learning", "Journal"];
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [notes, setNotes] = useState([]);
   const [gridView, setGridView] = useState(true);
 
@@ -54,10 +55,24 @@ export default function Page() {
   }, []);
 
   const filteredNotes = useMemo(() => {
-    if (selectedCategory === "All") return notes;
+    const query = searchQuery.trim().toLowerCase();
 
-    return notes.filter((note) => note.category === selectedCategory);
-  }, [selectedCategory, notes]);
+    return notes.filter((note) => {
+      const matchesCategory =
+        selectedCategory === "All" || note.category === selectedCategory;
+      const searchableText = [
+        note.title,
+        note.category,
+        note.content?.replace(/<[^>]*>/g, " "),
+        ...(note.tags || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return matchesCategory && searchableText.includes(query);
+    });
+  }, [selectedCategory, searchQuery, notes]);
 
   const handleToggle = async (id, action) => {
     try {
@@ -154,9 +169,25 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="mt-8 flex  gap-3 overflow-x-auto">
+      <div className="relative mt-8 max-w-xl">
+        <Search
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+        />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder="Search notes"
+          aria-label="Search notes"
+          className="h-11 w-full rounded-xl border bg-white pl-10 pr-4 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 dark:bg-[#0D0F1D]"
+        />
+      </div>
+
+      <div className="mt-5 flex gap-3 overflow-x-auto">
         {categories.map((category) => (
           <button
+            type="button"
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`rounded-full border px-5 py-2 text-sm transition ${
