@@ -15,6 +15,7 @@ import { User2 } from "lucide-react";
 import { toast } from "./ui/toast";
 import { Userlogout } from "@/lib/api/logout";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function UserDropdown() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export function UserDropdown() {
       <DropdownMenuTrigger
         render={
           <button
+            aria-label="Open account menu"
             type="button"
             className="rounded-full flex h-10 w-10 justify-center items-center bg-gradient-to-br from-violet-500 to-sky-500"
           >
@@ -53,11 +55,11 @@ export function UserDropdown() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuItem>
-            Profile
+            <Link href="/app/profile">Profile</Link>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            Settings
+            <Link href={"/app/settings"}>Settings</Link>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>

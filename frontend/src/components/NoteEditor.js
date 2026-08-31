@@ -194,7 +194,7 @@ export default function NoteEditor({
                         [&_hr]:my-6
                       "
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(note.content || ""),
+                        __html: note.content || "",
                       }}
                     />
                   </CardContent>
