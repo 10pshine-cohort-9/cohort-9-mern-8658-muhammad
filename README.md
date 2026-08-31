@@ -82,7 +82,7 @@ Database PostgreSQL
 ORM TypeORM
 Authentication JWT
 Logging Pino Logger
-Backend Testing Mocha / Chai
+Backend Jest
 Frontend Testing Jest
 Code Quality SonarQube
 Version Control Git
@@ -148,10 +148,10 @@ All note operations are associated with the authenticated user's ID.
 ### Authentication
 
 ```http
-POST /auth/register
-POST /auth/login
-POST /auth/logout
-GET  /auth/profile
+POST /auth/signup
+POST /auth/signin
+POST /auth/refresh
+POST /auth/signout
 ```
 
 ### Notes
@@ -167,9 +167,9 @@ DELETE /notes/:id
 Additional note actions can include:
 
 ```http
-PATCH /notes/:id/archive
+PATCH /notes/:id/archived
 PATCH /notes/:id/favorite
-PATCH /notes/:id/pin
+PATCH /notes/:id/pinned
 ```
 
 ---
@@ -322,12 +322,13 @@ notes-app/
 ├── frontend/          # Next.js application
 │
 ├── backend/           # NestJS application
-│   └── src/
-│       ├── auth/
-│       ├── users/
-│       ├── notes/
-│       ├── common/
-│       └── logger/
+│   └──modules/
+|     └── src/
+│        ├── auth/
+│        ├── users/
+│        ├── notes/
+│        ├── common/
+│        └── logger/
 │
 ├── sonar-project.properties
 ├── .gitignore
